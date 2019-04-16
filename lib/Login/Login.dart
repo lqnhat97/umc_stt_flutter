@@ -82,7 +82,7 @@ class _LoginState extends State<Login> {
               FloatingActionButton.extended(onPressed: _scanBarcode, icon: Icon(Icons.camera), label: Text(words.Word.Login_Scan))
               /*GestureDetector(
                 onTap: _scanBarcode,
-                child: Image.asset('images/barcode_scanner_64.jpg',
+                child: Image.asset('images/barcode.jpg',
                     fit: BoxFit.cover, alignment: new Alignment(-1.0, -1.5)),
               ),*/
             ],
