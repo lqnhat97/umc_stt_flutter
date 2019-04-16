@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/History/History.dart';
 import 'package:flutter_app/Utils/Words.dart';
 import 'package:flutter_app/Home/Fragments/HomeFragment.dart';
 ///author:nhatlq
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
 
   final List<Widget> _children = [
     Text("1"),
-    Text("2"),
+    History(),
     HomeFragment(),
     Text("4"),
     Text("5"),
