@@ -20,7 +20,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: _children.length, vsync: this);
+    _tabController = TabController(length: _children.length, vsync: this,initialIndex: 2);
+    _tabController.addListener(_handleTabSelection);
   }
 
   @override
@@ -35,7 +36,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       _currentIndex = index;
     });
     _tabController.animateTo(_currentIndex);
-
   }
 
   final List<Widget> _children = [
@@ -49,10 +49,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Dismissible(
-        resizeDuration:null,
-        onDismissed: onSwipping,
-        key: new ValueKey(_currentIndex),
+      body: DefaultTabController(
+        length: _children.length,
         child: TabBarView(children: _children,controller: _tabController,),
       )
       ,
@@ -86,10 +84,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
 
-  void onSwipping(DismissDirection direction) {
+  void _handleTabSelection() {
     setState(() {
-      _currentIndex+=direction == DismissDirection.endToStart ? 1 : -1;
+      _currentIndex=_tabController.index;
     });
-    _tabController.animateTo(_currentIndex);
   }
 }
