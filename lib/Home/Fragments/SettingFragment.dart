@@ -40,65 +40,89 @@ class _SettingFragmentState extends State<SettingFragment> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          title: Text(words.Word.BNB_Setting),
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-        ),
+        appBar: PreferredSize(
+            child: AppBar(
+              title: Text(words.Word.BNB_Setting),
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.blueAccent,
+            ),
+            preferredSize: Size.fromHeight(30.0)),
         body: Container(
+          decoration: BoxDecoration(color: Colors.white10),
           padding: EdgeInsets.symmetric(
             horizontal: 15.0,
           ),
           child: Column(
             children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Báo trước",
-                      style: TextStyle(color: Colors.blue, fontSize: 20.0),
+              Card(
+                elevation: 5.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Báo trước",
+                          style: TextStyle(color: Colors.blue, fontSize: 20.0),
+                        ),
+                        DropdownButton(
+                          value: _currentTime,
+                          items: _timeDropdownItems,
+                          onChanged: changeDropdownItems,
+                        )
+                      ],
                     ),
-                    DropdownButton(
-                      value: _currentTime,
-                      items: _timeDropdownItems,
-                      onChanged: changeDropdownItems,
-                    )
-                  ],
+                  ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(top: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Lặp lại",
-                      style: TextStyle(color: Colors.blue, fontSize: 20.0),
+              Card(
+                elevation: 5.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Lặp lại",
+                          style: TextStyle(color: Colors.blue, fontSize: 20.0),
+                        ),
+                        DropdownButton(
+                          value: _currentRepeat,
+                          items: _repeatDropdownItems,
+                          onChanged: changeDropdownItemsRepeat,
+                        )
+                      ],
                     ),
-                    DropdownButton(
-                      value: _currentRepeat,
-                      items: _repeatDropdownItems,
-                      onChanged: changeDropdownItemsRepeat,
-                    )
-                  ],
+                  ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(top: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Chuông",
-                      style: TextStyle(color: Colors.blue, fontSize: 20.0),
+              /*Card(
+                elevation: 5.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Chuông",
+                          style: TextStyle(color: Colors.blue, fontSize: 20.0),
+                        ),
+                        Text("10 phút")
+                      ],
                     ),
-                    Text("10 phút")
-                  ],
+                  ),
                 ),
-              )
+              )*/
             ],
           ),
         ));

@@ -195,12 +195,14 @@ class _HomeFragmentState extends State<HomeFragment> {
     // TODO: implement build
     //return homeWidget(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Trang chủ"),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.blueAccent,
-      ),
+      appBar: PreferredSize(
+          child: AppBar(
+            title: Text("Trang chủ"),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.blueAccent,
+          ),
+          preferredSize: Size.fromHeight(30.0)),
       body: FutureBuilder(
         future: fetchClinc(),
         builder: (context, snapshot) {
