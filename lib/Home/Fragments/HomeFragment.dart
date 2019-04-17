@@ -29,9 +29,9 @@ class _HomeFragmentState extends State<HomeFragment> {
 
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200) {
-      setState(() {
+      //setState(() {
         _clinic = Clinic.fromJson(json.decode(response.body));
-      });
+      //});
       return _clinic;
     } else
       throw Exception('Fail');
