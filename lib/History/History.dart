@@ -15,19 +15,22 @@ class History extends StatefulWidget {
 }
 
 ListTile _tile(String title, String subtitle1, String subtitle2) => ListTile(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(title,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
-              ))
-        ],
-      ),
+      title: Container(
+          decoration: BoxDecoration(color: Colors.grey),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                  ))
+            ],
+          )),
       subtitle: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[Text(subtitle1), Text(subtitle2)],
+        children: <Widget>[Text(subtitle1), Text(subtitle2 + " tuổi")],
       ),
     );
 
@@ -42,8 +45,8 @@ class _HistoryState extends State<History> {
 
     if (responseHistory.statusCode == 200) {
       //setState(() {
-        historyRequest =
-            HistoryRequestList.fromJson(json.decode(responseHistory.body));
+      historyRequest =
+          HistoryRequestList.fromJson(json.decode(responseHistory.body));
       //});
       return historyRequest;
     } else
@@ -54,17 +57,19 @@ class _HistoryState extends State<History> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Lịch sử tìm kiếm"),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.blueAccent,
-        ),
+        appBar: PreferredSize(
+            child: AppBar(
+              title: Text("Lịch sử tìm kiếm"),
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.blueAccent,
+            ),
+            preferredSize: Size.fromHeight(30.0)),
         body: FutureBuilder(
           future: fetchHistoryRequest(),
           builder: (context, snapshot) {
             // Truong hop da co du lieu
-            if (snapshot.hasData) {
+            if (historyRequest != null) {
               return thisWidget(context, snapshot);
             }
             // Neu khong co du lieu thi hien man hinh loading
@@ -85,7 +90,9 @@ class _HistoryState extends State<History> {
         itemCount: data.list.length,
         itemBuilder: (BuildContext context, int index) {
           return Card(
-              elevation: 2.0, child: _tile(data.list[index].idHistory,data.list[index].hoTen , data.list[index].tuoi.toString()));
+              elevation: 2.0,
+              child: _tile(data.list[index].idHistory, data.list[index].hoTen,
+                  data.list[index].tuoi.toString()));
         },
       ),
     );

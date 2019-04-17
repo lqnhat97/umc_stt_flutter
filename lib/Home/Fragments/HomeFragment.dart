@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/Request/Clinic.dart';
 import 'package:http/http.dart' as http;
+import 'package:expandable/expandable.dart';
 
-///author: nhatlq
+///author: nhatlq & vinhhnq
 
 class HomeFragment extends StatefulWidget {
   @override
@@ -30,7 +31,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200) {
       //setState(() {
-        _clinic = Clinic.fromJson(json.decode(response.body));
+      _clinic = Clinic.fromJson(json.decode(response.body));
       //});
       return _clinic;
     } else
@@ -39,156 +40,301 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   ///Man hinh kham benh
   Widget homeWidget(BuildContext context) {
+    List<Clinical> clinicalData = _HomeFragmentState._clinic.lamSang;
     List<Subclinical> data = _HomeFragmentState._clinic.canLamSang;
+    Expanded mExpanded;
     return Scaffold(
-      body: GridView.builder(
-          itemCount: data.length,
-          gridDelegate:
-              new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemBuilder: (BuildContext context, int index) {
-            return new GestureDetector(
-              child: new ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: Card(
-                  elevation: 2.0,
-                  child: new Container(
-                      padding: new EdgeInsets.symmetric(
-                          vertical: 1.0, horizontal: 5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            data[index].tenPhong,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent,
-                                fontSize: 18),
-                            textAlign: TextAlign.center,
-                          ),
-                          Container(
-                            padding: new EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: ListView.builder(
+            itemCount: clinicalData.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ExpandableNotifier(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ExpandablePanel(
+                    header: Card(
+                        elevation: 5.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  "Phòng",
+                                  "Phòng khám",
                                   style: TextStyle(
-                                      color: Colors.black, fontSize: 15),
-                                  textAlign: TextAlign.left,
+                                      color: Colors.blue[800],
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  data[index].maPhongCls,
+                                  clinicalData[index].maPhong,
                                   style: TextStyle(
-                                      color: Colors.black45, fontSize: 15),
-                                  textAlign: TextAlign.right,
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: new EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  "Thời gian",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 15),
-                                  textAlign: TextAlign.left,
+                                      color: Colors.black,
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  data[index].thoiGianDuKien,
+                                  "Thời gian dự kiến",
                                   style: TextStyle(
-                                      color: Colors.black45, fontSize: 15),
-                                  textAlign: TextAlign.right,
-                                )
+                                      color: Colors.blue[800],
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  clinicalData[index].thoiGianDuKien,
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text("còn ... h ... phút")
                               ],
                             ),
-                          ),
-                          Container(
-                            padding: new EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
                                   "Số hiện tại",
                                   style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.left,
+                                    color: Colors.black,
+                                    fontSize: 25,
+                                  ),
                                 ),
                                 Text(
-                                  data[index].sttHienTai.toString(),
+                                  clinicalData[index].sttHienTai.toString(),
                                   style: TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.right,
-                                )
-                              ],
-                            ),
-                          ),
-                          Container(
-                              padding: new EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 0.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    "Số của bạn",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.left,
+                                      color: Colors.blueAccent, fontSize: 25),
+                                ),
+                                IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 5.0, horizontal: 25.0),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.blue[700],
+                                              width: 2.0),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Text(
+                                              "Số của bạn",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 25,
+                                              ),
+                                            ),
+                                            Text(
+                                              clinicalData[index]
+                                                  .stt
+                                                  .toString(),
+                                              style: TextStyle(
+                                                color: Colors.blue[700],
+                                                fontSize: 40,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  Text(
-                                    data[index].stt.toString(),
-                                    style: TextStyle(
-                                        color: Colors.redAccent,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.right,
-                                  )
-                                ],
-                              )),
-                        ],
-                      )),
-                ),
-              ),
-              onTap: () {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  child: new CupertinoAlertDialog(
-                    title: new Column(
-                      children: <Widget>[
-                        new Text("GridView"),
-                        new Icon(
-                          Icons.favorite,
-                          color: Colors.green,
-                        ),
-                      ],
-                    ),
-                    content: new Text("Selected Item $index"),
-                    actions: <Widget>[
-                      new FlatButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: new Text("OK"))
-                    ],
-                  ),
-                );
-              },
-            );
-          }),
-    );
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                              ],
+                            )
+                          ],
+                        )),
+
+
+                    // Cận lâm sàng
+                    expanded: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: GridView.builder(
+                            itemCount: data.length,
+                            gridDelegate:
+                                new SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2),
+                            itemBuilder: (BuildContext context, int index) {
+                              return new GestureDetector(
+                                child: new ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: Card(
+                                    elevation: 2.0,
+                                    child: new Container(
+                                        padding: new EdgeInsets.symmetric(
+                                            vertical: 1.0, horizontal: 5.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              data[index].tenPhong,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.blueAccent,
+                                                  fontSize: 18),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Container(
+                                              padding: new EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 0.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Text(
+                                                    "Phòng",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  Text(
+                                                    data[index].maPhongCls,
+                                                    style: TextStyle(
+                                                        color: Colors.black45,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.right,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: new EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 0.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Text(
+                                                    "Thời gian",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  Text(
+                                                    data[index].thoiGianDuKien,
+                                                    style: TextStyle(
+                                                        color: Colors.black45,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.right,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              padding: new EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 0.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Text(
+                                                    "Số hiện tại",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  Text(
+                                                    data[index]
+                                                        .sttHienTai
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        color: Colors.lightBlue,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    textAlign: TextAlign.right,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                                padding:
+                                                    new EdgeInsets.symmetric(
+                                                        vertical: 5,
+                                                        horizontal: 0.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "Số của bạn",
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign: TextAlign.left,
+                                                    ),
+                                                    Text(
+                                                      data[index]
+                                                          .stt
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.redAccent,
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                      textAlign:
+                                                          TextAlign.right,
+                                                    )
+                                                  ],
+                                                )),
+                                          ],
+                                        )),
+                                  ),
+                                ),
+                                onTap: () {
+                                  showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    child: new CupertinoAlertDialog(
+                                      title: new Column(
+                                        children: <Widget>[
+                                          new Text("GridView"),
+                                          new Icon(
+                                            Icons.favorite,
+                                            color: Colors.green,
+                                          ),
+                                        ],
+                                      ),
+                                      content: new Text("Selected Item $index"),
+                                      actions: <Widget>[
+                                        new FlatButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: new Text("OK"))
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            })),
+                    tapHeaderToExpand: true,
+                    hasIcon: false,
+                  )
+                ],
+              ));
+            }));
   }
 
   Widget build(BuildContext context) {
