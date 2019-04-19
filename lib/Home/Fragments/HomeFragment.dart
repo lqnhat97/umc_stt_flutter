@@ -42,7 +42,6 @@ class _HomeFragmentState extends State<HomeFragment> {
   Widget homeWidget(BuildContext context) {
     List<Clinical> clinicalData = _HomeFragmentState._clinic.lamSang;
     List<Subclinical> data = _HomeFragmentState._clinic.canLamSang;
-    Expanded mExpanded;
     return Scaffold(
         body: ListView.builder(
             itemCount: clinicalData.length,
