@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class SettingFragment extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class _SettingFragmentState extends State<SettingFragment> {
   List<DropdownMenuItem<String>> _timeDropdownItems, _repeatDropdownItems;
   String _currentTime, _currentRepeat;
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   @override
   void initState() {
     _timeDropdownItems = getDropDownItems(_time);
@@ -23,6 +26,11 @@ class _SettingFragmentState extends State<SettingFragment> {
     _currentRepeat = _repeatDropdownItems[0].value;
     // TODO: implement initState
     super.initState();
+    var initializationSettingsAndroid = new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,onSelectNotification:onSelecNofitication);
   }
 
   List<DropdownMenuItem<String>> getDropDownItems(List type) {
@@ -103,40 +111,64 @@ class _SettingFragmentState extends State<SettingFragment> {
                   ),
                 ),
               ),
-              /*Card(
-                elevation: 5.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15.0),
-                  clipBehavior: Clip.antiAlias,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "Chuông",
-                          style: TextStyle(color: Colors.blue, fontSize: 20.0),
-                        ),
-                        Text("10 phút")
-                      ],
-                    ),
-                  ),
-                ),
-              )*/
             ],
           ),
         ));
   }
 
+
   void changeDropdownItems(String value) {
     setState(() {
       _currentTime = value;
     });
+      _showNotificationWithoutSound();
+
   }
 
   void changeDropdownItemsRepeat(String value) {
     setState(() {
       _currentRepeat = value;
     });
+  }
+
+  Future onSelecNofitication(String payload) async {
+    showDialog(context: context,
+      builder: (_)=>AlertDialog(
+        title: const Text("Nhắc nhở"),
+        content: Text("Hãy đến phòng khám: $payload"),
+      )
+    );
+  }
+  Future _showNotificationWithoutSound() async {
+    var scheduledNotificationDateTime = DateTime.now().add(Duration(minutes: 1));
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'umc_notification', 'UMC Notification', '',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics =
+    new IOSNotificationDetails(presentSound: false);
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    int minutesIncrement = 1;
+    var dateTimeNow = DateTime.now().toLocal();
+
+    for(int i=1;i<=12;i++){
+      var scheduledNotificationDateTime = dateTimeNow.add(new Duration(minutes: minutesIncrement));
+      await flutterLocalNotificationsPlugin.schedule(
+          i,
+          'scheduled title $i',
+          'scheduled: $scheduledNotificationDateTime',
+          scheduledNotificationDateTime,
+          platformChannelSpecifics);
+      minutesIncrement= minutesIncrement+1;
+    }
+    /*await flutterLocalNotificationsPlugin.schedule(
+      0,
+      'Thông báo',
+      'Đã đến giờ giám, nhấp vào để xem chi tiết!',
+      scheduledNotificationDateTime,
+      platformChannelSpecifics,
+      payload: 'tên phòng',
+    );*/
   }
 }
