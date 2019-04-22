@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Booking/Booking.dart';
 
 class ProfileFragment extends StatefulWidget {
   @override
@@ -70,7 +71,7 @@ class _ProfileFragment extends State<ProfileFragment> {
                     ],
                   ),
                 )),
-//Card gender
+            //Card gender
             Card(
                 elevation: 2.0,
                 child: Padding(
@@ -120,20 +121,26 @@ class _ProfileFragment extends State<ProfileFragment> {
               height: 10.0,
             ),
             RaisedButton(
-                onPressed: null,
-                textColor: Colors.white,
-                elevation: 5.0,
-                shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-                padding:  EdgeInsets.all(0.0),
-                child: Container(
-
-                  padding:  EdgeInsets.symmetric(vertical: 15.0,horizontal: 15.0),
-                  decoration:  BoxDecoration(color: Colors.green,borderRadius: BorderRadius.circular(10.0)),
-                  child: Text(
-                    "ĐẶT LỊCH KHÁM NGAY",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                )),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Booking()));
+              },
+              textColor: Colors.white,
+              elevation: 5.0,
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(10.0)),
+              padding: EdgeInsets.all(0.0),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+                decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: Text(
+                  "ĐẶT LỊCH KHÁM NGAY",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
 
             //Image(image: )
           ],

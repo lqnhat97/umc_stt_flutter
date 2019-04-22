@@ -21,7 +21,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
     String data1 = "testData1";
     String data2 = "testData2";
     String data3 = "testData3";
-    // TODO: implement build
+    // Xây dựng view thông tin của bệnh nhân
     return Scaffold(
       appBar: PreferredSize(
           child: AppBar(
@@ -72,6 +72,8 @@ class _SearchedPatientState extends State<SearchedPatient> {
                   )
                 ],
               ))),
+
+          //Xây dựng view Cân lâm sàng và lâm sàng của bệnh nhân khác
           /*ListView.builder(
               itemCount: clinicalData.length,
               itemBuilder: (BuildContext context, int index) {
