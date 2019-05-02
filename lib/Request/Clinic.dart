@@ -17,7 +17,7 @@ class Clinic {
 }
 
 class Subclinical {
-  String maPhongCls, tenPhong, thoiGianDuKien;
+  String maPhongCls, tenPhong = "?", thoiGianDuKien;
   int stt, sttHienTai;
 
   Subclinical(

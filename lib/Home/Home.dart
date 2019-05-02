@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/History/HistoryFragment.dart';
-import 'package:flutter_app/SearchedPatient/SearchedPatient.dart';
-import 'package:flutter_app/Utils/Words.dart';
 import 'package:flutter_app/Home/Fragments/HomeFragment.dart';
-import 'package:flutter_app/Home/Fragments/SettingFragment.dart';
 import 'package:flutter_app/Home/Fragments/ProfileFragment.dart';
+import 'package:flutter_app/Home/Fragments/ScanSearchedPatientHolder.dart';
+import 'package:flutter_app/Home/Fragments/SettingFragment.dart';
+import 'package:flutter_app/Utils/Words.dart' as words;
 
-///author:nhatlq
+///author:nhatlq, vinhhnq
 
 class Home extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
@@ -16,7 +17,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
-  final words = new Word();
   int _currentIndex = 2;
   TabController _tabController;
 
@@ -44,8 +44,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _tabController.animateTo(_currentIndex);
   }
 
+
   final List<Widget> _children = [
-    SearchedPatient(),
+    ScanSearchedPatientHolder(),
     History(),
     HomeFragment(),
     ProfileFragment(),
@@ -72,7 +73,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 color: Colors.blueAccent,
               ),
               title: Text(
-                Word.BNB_Search,
+                words.Word.BNB_Search,
                 style: TextStyle(color: Colors.blueAccent),
               )),
           BottomNavigationBarItem(
@@ -81,25 +82,25 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 color: Colors.blueAccent,
               ),
               title: Text(
-                Word.BNB_History,
+                words.Word.BNB_History,
                 style: TextStyle(color: Colors.blueAccent),
               )),
           BottomNavigationBarItem(
               icon: new Icon(Icons.home, color: Colors.blueAccent),
               title: Text(
-                Word.BNB_Home,
+                words.Word.BNB_Home,
                 style: TextStyle(color: Colors.blueAccent),
               )),
           BottomNavigationBarItem(
               icon: new Icon(Icons.person, color: Colors.blueAccent),
               title: Text(
-                Word.BNB_Profile,
+                words.Word.BNB_Profile,
                 style: TextStyle(color: Colors.blueAccent),
               )),
           BottomNavigationBarItem(
               icon: new Icon(Icons.settings, color: Colors.blueAccent),
               title: Text(
-                Word.BNB_Setting,
+                words.Word.BNB_Setting,
                 style: TextStyle(color: Colors.blueAccent),
               )),
         ],
@@ -114,3 +115,4 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     });
   }
 }
+

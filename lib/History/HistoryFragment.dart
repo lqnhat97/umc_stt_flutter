@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
@@ -40,7 +39,7 @@ class _HistoryState extends State<History> {
 
   Future<HistoryRequestList> fetchHistoryRequest() async {
     final String urlHistory =
-        "https://fit-umc-stt.azurewebsites.net/history/" + barcode;
+        "http://192.168.1.7:8088/history/" + barcode;
     final responseHistory = await http.get(urlHistory);
 
     if (responseHistory.statusCode == 200) {

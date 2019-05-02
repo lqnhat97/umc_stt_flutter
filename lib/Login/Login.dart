@@ -3,8 +3,9 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/Home/Home.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
-///author: nhatlq
+import 'package:http/http.dart' as http;
 
+///author: nhatlq
 
 class Login extends StatefulWidget {
   static String result = "";
@@ -15,6 +16,20 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
+  Future<dynamic> fetchClinc(String barcodeResult) async {
+    final String url =
+        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" +
+            barcodeResult;
+    final response = await http.get(url);
+
+    //Neu thong tin tra ve la dung
+    if (response.statusCode == 200) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Home()));
+    } else
+      throw Exception('Fail');
+  }
+
   ///Scan barcode
   Future _scanBarcode() async {
     try {
@@ -22,7 +37,8 @@ class _LoginState extends State<Login> {
       setState(() {
         Login.result = barcodeResult;
       });
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
+      fetchClinc(barcodeResult);
+
     } on PlatformException catch (ex) {
       if (ex.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {
@@ -79,7 +95,10 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 30,
               ),
-              FloatingActionButton.extended(onPressed: _scanBarcode, icon: Icon(Icons.camera), label: Text(words.Word.Login_Scan))
+              FloatingActionButton.extended(
+                  onPressed: _scanBarcode,
+                  icon: Icon(Icons.camera),
+                  label: Text(words.Word.Login_Scan))
               /*GestureDetector(
                 onTap: _scanBarcode,
                 child: Image.asset('images/barcode.jpg',

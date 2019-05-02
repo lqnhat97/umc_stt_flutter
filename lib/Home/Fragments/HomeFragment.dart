@@ -24,7 +24,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinc() async {
     final String url =
-        "https://fit-umc-stt.azurewebsites.net/clinic/thongtinkhambenh/" +
+        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" +
             barcode;
     final response = await http.get(url);
 
