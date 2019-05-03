@@ -24,7 +24,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinc() async {
     final String url =
-        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" +
+        "http://192.168.1.90:8088/clinic/thongtinkhambenh/" +
             barcode;
     final response = await http.get(url);
 
@@ -60,14 +60,14 @@ class _HomeFragmentState extends State<HomeFragment> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  "Phòng khám",
+                                 clinicalData[index].tenChuyenKhoa ,
                                   style: TextStyle(
-                                      color: Colors.blue[800],
-                                      fontSize: 25,
+                                      color: Colors.blue,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  clinicalData[index].maPhong,
+                                  clinicalData[index].maPhong ,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 25,

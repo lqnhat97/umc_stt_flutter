@@ -21,16 +21,17 @@ class _ProfileFragment extends State<ProfileFragment> {
   String data2 = "TestData2";
   String data3 = "TestData3";
   Future<Profile> fetchProfileRequest() async {
-    final String urlHistory = "http://192.168.1.7:8088/patient/" + barcode;
-    final responseHistory = await http.get(urlHistory);
+    final String url = "http://192.168.1.90:8088/patient/" + barcode;
+    final response = await http.get(url);
 
-    if (responseHistory.statusCode == 200) {
-      //setState(() {
-      _profile = Profile.fromJson(json.decode(responseHistory.body));
-      data1 = _profile.lastName + _profile.middleName +_profile.firstName;
-      data2 = _profile.birthDay;
+    if (response.statusCode == 200) {
+
+      _profile = Profile.fromJson(json.decode(response.body.substring(1,response.body.length-1)));
+      data1 = _profile.lastName+ " "+ _profile.middleName + " "+_profile.firstName;
+      List<String> data4 = _profile.birthDay.substring(0,10).split('-');
+      data2 = data4[2]+"/"+data4[1]+"/"+data4[0];
       data3 = _profile.homeTowm;
-      //});
+
       return _profile;
     } else
       throw Exception('Fail');
@@ -187,7 +188,7 @@ class _ProfileFragment extends State<ProfileFragment> {
                       backgroundColor: Colors.blueAccent,
                     ),
                     preferredSize: Size.fromHeight(30.0)),
-                body: new CircularProgressIndicator());
+                body: Center(child:new CircularProgressIndicator()));
         });
   }
 }

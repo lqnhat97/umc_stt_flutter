@@ -18,7 +18,7 @@ class _LoginState extends State<Login> {
 
   Future<dynamic> fetchClinc(String barcodeResult) async {
     final String url =
-        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" +
+        "http://192.168.1.90:8088/clinic/thongtinkhambenh/" +
             barcodeResult;
     final response = await http.get(url);
 

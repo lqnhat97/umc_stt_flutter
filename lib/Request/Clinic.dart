@@ -38,16 +38,19 @@ class Subclinical {
 }
 
 class Clinical {
-  String maPhong, thoiGianDuKien;
+  String maPhong, thoiGianDuKien,tenChuyenKhoa;
   int stt, sttHienTai;
 
-  Clinical({this.maPhong, this.stt, this.sttHienTai, this.thoiGianDuKien});
+  Clinical({this.maPhong, this.stt, this.sttHienTai, this.thoiGianDuKien,this.tenChuyenKhoa});
 
   factory Clinical.fromJson(Map<String, dynamic> json) {
     return Clinical(
         maPhong: json['maPhong'],
         stt: json['stt'],
         sttHienTai: json['sttHienTai'],
-        thoiGianDuKien: json['thoiGianDuKien']);
+        thoiGianDuKien: json['thoiGianDuKien'],
+        tenChuyenKhoa: json['tenChuyenKhoa']
+    );
+
   }
 }
