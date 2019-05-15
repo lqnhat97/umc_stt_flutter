@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/Request/Clinic.dart';
+import 'package:flutter_app/Utils/Words.dart' as words;
 import 'package:http/http.dart' as http;
-import 'package:expandable/expandable.dart';
 
 ///author: nhatlq & vinhhnq
 
@@ -23,9 +25,7 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinc() async {
-    final String url =
-        "http://192.168.1.90:8088/clinic/thongtinkhambenh/" +
-            barcode;
+    final String url = words.Word.ip + "/clinic/thongtinkhambenh/" + barcode;
     final response = await http.get(url);
 
     //Neu thong tin tra ve la dung
@@ -60,14 +60,14 @@ class _HomeFragmentState extends State<HomeFragment> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                 clinicalData[index].tenChuyenKhoa ,
+                                  clinicalData[index].tenChuyenKhoa,
                                   style: TextStyle(
                                       color: Colors.blue,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  clinicalData[index].maPhong ,
+                                  clinicalData[index].maPhong,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 25,
@@ -151,7 +151,6 @@ class _HomeFragmentState extends State<HomeFragment> {
                             )
                           ],
                         )),
-
 
                     // Cận lâm sàng
                     expanded: SizedBox(

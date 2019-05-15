@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/Request/History.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_app/Utils/Words.dart' as words;
 
 class History extends StatefulWidget {
   @override
@@ -39,7 +40,7 @@ class _HistoryState extends State<History> {
 
   Future<HistoryRequestList> fetchHistoryRequest() async {
     final String urlHistory =
-        "http://192.168.1.7:8088/history/" + barcode;
+        words.Word.ip + "/history/" + barcode;
     final responseHistory = await http.get(urlHistory);
 
     if (responseHistory.statusCode == 200) {

@@ -29,6 +29,7 @@ dependencies:
   expandable: ^2.1.0+3
   flutter_local_notifications: ^0.6.1
   flutter_calendar_carousel: ^1.3.16
+  shared_preferences: ^0.5.2
 
 dev_dependencies:
   flutter_test:

@@ -12,4 +12,7 @@ class Word{
   static final Login_Press_Back_Button = "You pressed the back button before scanning anything";
   static final Login_Scan = "Quét";
   static final Login_Guide = "Đưa barcode vào vùng quét";
+
+  //IP
+  static final ip = "http://nhatlq97.sytes.net:8088";
 }

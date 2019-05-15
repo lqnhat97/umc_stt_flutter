@@ -5,6 +5,7 @@ import 'package:flutter_app/Booking/Booking.dart';
 import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/Request/Profile.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_app/Utils/Words.dart' as words;
 
 class ProfileFragment extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _ProfileFragment extends State<ProfileFragment> {
   String data2 = "TestData2";
   String data3 = "TestData3";
   Future<Profile> fetchProfileRequest() async {
-    final String url = "http://192.168.1.90:8088/patient/" + barcode;
+    final String url = words.Word.ip + "/patient/" + barcode;
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -69,12 +70,12 @@ class _ProfileFragment extends State<ProfileFragment> {
                               Text(
                                 "Họ và tên",
                                 style: TextStyle(
-                                    color: Colors.blueAccent, fontSize: 25),
+                                    color: Colors.blueAccent, fontSize: 20),
                               ),
                               Text(
                                 data1,
                                 style: TextStyle(
-                                    color: Colors.black45, fontSize: 25),
+                                    color: Colors.black45, fontSize: 20),
                               )
                             ],
                           ),
@@ -92,12 +93,12 @@ class _ProfileFragment extends State<ProfileFragment> {
                               Text(
                                 "Ngày Sinh",
                                 style: TextStyle(
-                                    color: Colors.blueAccent, fontSize: 25),
+                                    color: Colors.blueAccent, fontSize: 20),
                               ),
                               Text(
                                 data2,
                                 style: TextStyle(
-                                    color: Colors.black45, fontSize: 25),
+                                    color: Colors.black45, fontSize: 20),
                               )
                             ],
                           ),
@@ -115,13 +116,13 @@ class _ProfileFragment extends State<ProfileFragment> {
                                 "Giới tính",
                                 style: TextStyle(
                                   color: Colors.blueAccent,
-                                  fontSize: 25,
+                                  fontSize: 20,
                                 ),
                               ),
                               Text(
                                 _profile.gender,
                                 style: TextStyle(
-                                    color: Colors.black45, fontSize: 25),
+                                    color: Colors.black45, fontSize: 20),
                               )
                             ],
                           ),
@@ -139,13 +140,13 @@ class _ProfileFragment extends State<ProfileFragment> {
                                 "Địa chỉ",
                                 style: TextStyle(
                                   color: Colors.blueAccent,
-                                  fontSize: 25,
+                                  fontSize: 20,
                                 ),
                               ),
                               Text(
                                 _profile.address,
                                 style: TextStyle(
-                                    color: Colors.black45, fontSize: 25),
+                                    color: Colors.black45, fontSize: 20),
                               )
                             ],
                           ),

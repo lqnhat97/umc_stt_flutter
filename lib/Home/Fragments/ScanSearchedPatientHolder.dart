@@ -16,7 +16,7 @@ class ScanSearchedPatientHolder extends StatefulWidget {
 class ScanSearchedPatientHolderState extends State<StatefulWidget> {
   Future<dynamic> fetchClinic(String barcodeResult) async {
     final String url =
-        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" + barcodeResult;
+        words.Word.ip + "/clinic/thongtinkhambenh/" + barcodeResult;
     final response = await http.get(url);
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200) {
@@ -63,7 +63,7 @@ class ScanSearchedPatientHolderState extends State<StatefulWidget> {
     return Scaffold(
       appBar: PreferredSize(
           child: AppBar(
-            title: Text("Trang chủ"),
+            title: Text("Tìm kiếm"),
             centerTitle: true,
             automaticallyImplyLeading: false,
             backgroundColor: Colors.blueAccent,

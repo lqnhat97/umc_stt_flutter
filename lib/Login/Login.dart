@@ -17,17 +17,18 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   Future<dynamic> fetchClinc(String barcodeResult) async {
-    final String url =
-        "http://192.168.1.90:8088/clinic/thongtinkhambenh/" +
-            barcodeResult;
-    final response = await http.get(url);
-
-    //Neu thong tin tra ve la dung
-    if (response.statusCode == 200) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Home()));
-    } else
-      throw Exception('Fail');
+    if(barcodeResult != "") {
+      final String url =
+          words.Word.ip + "/clinic/thongtinkhambenh/" +
+              barcodeResult;
+      final response = await http.get(url);
+      //Neu thong tin tra ve la dung
+      if (response.statusCode == 200) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Home()));
+      } else
+        throw Exception('Fail');
+    }
   }
 
   ///Scan barcode

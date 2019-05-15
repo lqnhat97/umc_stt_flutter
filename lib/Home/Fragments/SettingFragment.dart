@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingFragment extends StatefulWidget {
   @override
@@ -16,7 +17,30 @@ class _SettingFragmentState extends State<SettingFragment> {
   List<DropdownMenuItem<String>> _timeDropdownItems, _repeatDropdownItems;
   String _currentTime, _currentRepeat;
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+
+  FlutterLocalNotificationsPlugin get notifications => _notifications;
+
+  SharedPreferences prefs;
+
+  //init Nofitication
+  Future init() async{
+    notifications.initialize(InitializationSettings(AndroidInitializationSettings('@mipmap/ic_launcher'), IOSInitializationSettings()));
+  }
+
+  Future initNotification() async{
+    bool updateNotifications;
+    prefs = await SharedPreferences.getInstance();
+
+/*    // Checks if is necessary to update scheduled notifications
+    try {
+      updateNotifications =
+          prefs.getString('notifications.launches.upcoming') !=
+
+    } catch (e) {
+      updateNotifications = true;
+    }*/
+  }
 
   @override
   void initState() {
@@ -26,11 +50,7 @@ class _SettingFragmentState extends State<SettingFragment> {
     _currentRepeat = _repeatDropdownItems[0].value;
     // TODO: implement initState
     super.initState();
-    var initializationSettingsAndroid = new AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettingsIOS = new IOSInitializationSettings();
-    var initializationSettings = new InitializationSettings(initializationSettingsAndroid, initializationSettingsIOS);
-    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,onSelectNotification:onSelecNofitication);
+    _notifications = new FlutterLocalNotificationsPlugin();
   }
 
   List<DropdownMenuItem<String>> getDropDownItems(List type) {
@@ -120,6 +140,7 @@ class _SettingFragmentState extends State<SettingFragment> {
   void changeDropdownItems(String value) {
     setState(() {
       _currentTime = value;
+
     });
       _showNotificationWithoutSound();
 
@@ -149,26 +170,14 @@ class _SettingFragmentState extends State<SettingFragment> {
     var platformChannelSpecifics = new NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
-    int minutesIncrement = 1;
-    var dateTimeNow = DateTime.now().toLocal();
-
-    for(int i=1;i<=12;i++){
-      var scheduledNotificationDateTime = dateTimeNow.add(new Duration(minutes: minutesIncrement));
-      await flutterLocalNotificationsPlugin.schedule(
-          i,
-          'scheduled title $i',
-          'scheduled: $scheduledNotificationDateTime',
-          scheduledNotificationDateTime,
-          platformChannelSpecifics);
-      minutesIncrement= minutesIncrement+1;
-    }
-    /*await flutterLocalNotificationsPlugin.schedule(
+    await _notifications.schedule(
       0,
       'Thông báo',
       'Đã đến giờ giám, nhấp vào để xem chi tiết!',
       scheduledNotificationDateTime,
       platformChannelSpecifics,
       payload: 'tên phòng',
-    );*/
+    );
   }
+
 }
