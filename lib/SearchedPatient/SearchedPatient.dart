@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter_app/Login/Login.dart';
+
 
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Home/Fragments/ScanSearchedPatientHolder.dart';
 import 'package:flutter_app/Request/Clinic.dart';
 import 'package:flutter_app/Request/Profile.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart'as http;
+import 'package:flutter_app/Utils/Words.dart' as words;
 
 class SearchedPatient extends StatefulWidget {
   @override
@@ -20,7 +23,8 @@ class _SearchedPatientState extends State<SearchedPatient> {
   String barcode = ScanSearchedPatientHolder.searchedPatientResult;
   static Clinic _clinic;
   static Profile searchedPatientProfile;
-  List<Clinical> clinicalData ;
+  List<Clinical> clinicalData;
+
   List<Subclinical> data;
   String data1 = "testData1";
   String data2 = "testData2";
@@ -46,33 +50,34 @@ class _SearchedPatientState extends State<SearchedPatient> {
 
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinic() async {
-    Client client = Client();
-    Client client2 = Client();
-    final String url =
-        "http://192.168.1.7:8088/clinic/thongtinkhambenh/" + barcode;
-    final String url2 = "http://192.168.1.7:8088/patient/" + barcode;
+    //Client client = http();
+    //Client client2 = Client();
+    final String url = words.Word.ip + "/clinic/thongtinkhambenh/" + barcode;
+    final String url2 = words.Word.ip + "/patient/" + barcode;
 
-    final response = await client.get(url);
-    final response2 = await client2.get(url2);
+    final response = await http.get(url);
+    final response2 = await http.get(url2);
+    //final response2 = await client2.get(url2);
     //Neu thong tin tra ve la dung
-    if (response.statusCode == 200 && response2.statusCode == 200) {
-      setState(() {
+    if (response.statusCode == 200 && response2.statusCode == 200) {//&& response2.statusCode == 200) {
+      //setState(() {
         _clinic = Clinic.fromJson(json.decode(response.body));
+        http.post(words.Word.ip +'/history?idBn='+Login.result+"&idBnSearch="+barcode);
+
         searchedPatientProfile = Profile.fromJson(json.decode(response2.body));
-        data1 = searchedPatientProfile.lastName +
-            searchedPatientProfile.middleName +
+        data1 = searchedPatientProfile.lastName +" "+
+            (searchedPatientProfile.middleName==""?"": (searchedPatientProfile.middleName+" "))+
             searchedPatientProfile.firstName;
-        data2 = searchedPatientProfile.birthDay;
+        data2= searchedPatientProfile.birthDay;
         data3 = (_clinic.lamSang.length + _clinic.canLamSang.length).toString();
         return _clinic;
-      });
+      //});
     } else
       throw Exception('Fail');
   }
 
   @override
   Widget build(BuildContext context) {
-
     // Xây dựng view thông tin của bệnh nhân
     return FutureBuilder(
         future: fetchClinic(),
@@ -80,62 +85,67 @@ class _SearchedPatientState extends State<SearchedPatient> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: PreferredSize(
-                  child: AppBar(
-                    title: Text("Bệnh nhân khác"),
-                    centerTitle: true,
-                    automaticallyImplyLeading: false,
-                    backgroundColor: Colors.blueAccent,
-                  ),
-                  preferredSize: Size.fromHeight(30.0)),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Card(
-                      elevation: 5.0,
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Bệnh nhân",
-                                style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    children: <Widget>[
+                      PreferredSize(
+                          child: AppBar(
+                            title: Text("Bệnh nhân khác"),
+                            centerTitle: true,
+                            automaticallyImplyLeading: false,
+                            backgroundColor: Colors.blueAccent,
+                          ),
+                          preferredSize: Size.fromHeight(15.0)),
+                      Card(
+                          elevation: 5.0,
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    data1,
+                                    "Bệnh nhân",
                                     style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 25,
+                                        color: Colors.blueAccent,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.w500),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        data1,
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        data2.substring(0,10),
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
                                   Text(
-                                    data2,
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w500),
-                                  ),
+                                    "đang có " + data3 + " cuộc hẹn",
+                                    style: TextStyle(color: Colors.grey[300]),
+                                  )
                                 ],
-                              ),
-                              Text(
-                                "đang có " + data3 + " cuộc hẹn",
-                                style: TextStyle(color: Colors.grey[300]),
-                              )
-                            ],
-                          ))),
-
+                              ))),
+                    ],
+                  ),
+                  preferredSize: Size.fromHeight(152.0)),
+              body:
                   //Xây dựng view Cân lâm sàng và lâm sàng của bệnh nhân khác
                   ListView.builder(
-                      itemCount: clinicalData.length,
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: _clinic.lamSang.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ExpandableNotifier(
                             child: Column(
@@ -153,14 +163,14 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                             MainAxisAlignment.center,
                                         children: <Widget>[
                                           Text(
-                                            "Phòng khám",
+                                            _clinic.lamSang[index].tenChuyenKhoa,
                                             style: TextStyle(
                                                 color: Colors.blue[800],
                                                 fontSize: 25,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           Text(
-                                            clinicalData[index].maPhong,
+                                            _clinic.lamSang[index].maPhong,
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 25,
@@ -174,7 +184,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           Text(
-                                            clinicalData[index].thoiGianDuKien,
+                                            _clinic.lamSang[index].thoiGianDuKien,
                                             style: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 20,
@@ -195,7 +205,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                             ),
                                           ),
                                           Text(
-                                            clinicalData[index]
+                                            _clinic.lamSang[index]
+                                                .sttHienTai
+                                                .toString()=='null'?'0':_clinic.lamSang[index]
                                                 .sttHienTai
                                                 .toString(),
                                             style: TextStyle(
@@ -229,7 +241,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        clinicalData[index]
+                                                        _clinic.lamSang[index]
                                                             .stt
                                                             .toString(),
                                                         style: TextStyle(
@@ -251,12 +263,13 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                       )
                                     ],
                                   )),
-
                               // Cận lâm sàng
-                              expanded: SizedBox(
-                                  height: MediaQuery.of(context).size.height,
-                                  child: GridView.builder(
-                                      itemCount: data.length,
+                              expanded: /*SizedBox(
+                                  height: (MediaQuery.of(context).size.height - 100.0),
+                                  child: */GridView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      itemCount: _clinic.canLamSang.length,
                                       gridDelegate:
                                           new SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 2),
@@ -279,7 +292,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                             .center,
                                                     children: <Widget>[
                                                       Text(
-                                                        data[index].tenPhong,
+                                                        _clinic.canLamSang[index].tenPhong,
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -310,7 +323,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                       .left,
                                                             ),
                                                             Text(
-                                                              data[index]
+                                                              _clinic.canLamSang[index]
                                                                   .maPhongCls,
                                                               style: TextStyle(
                                                                   color: Colors
@@ -344,7 +357,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                       .left,
                                                             ),
                                                             Text(
-                                                              data[index]
+                                                              _clinic.canLamSang[index]
                                                                   .thoiGianDuKien,
                                                               style: TextStyle(
                                                                   color: Colors
@@ -381,7 +394,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                       .left,
                                                             ),
                                                             Text(
-                                                              data[index]
+                                                              _clinic.canLamSang[index]
+                                                                  .sttHienTai
+                                                                  .toString()=='nul'?'0':_clinic.canLamSang[index]
                                                                   .sttHienTai
                                                                   .toString(),
                                                               style: TextStyle(
@@ -423,7 +438,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                         .left,
                                                               ),
                                                               Text(
-                                                                data[index]
+                                                                _clinic.canLamSang[index]
                                                                     .stt
                                                                     .toString(),
                                                                 style: TextStyle(
@@ -472,15 +487,15 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                             );
                                           },
                                         );
-                                      })),
+                                      })/*)*/,
                               tapHeaderToExpand: true,
                               hasIcon: false,
                             )
                           ],
                         ));
                       })
-                ],
-              ),
+
+
             );
           } else {
             return Scaffold(

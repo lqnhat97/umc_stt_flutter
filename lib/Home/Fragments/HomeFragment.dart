@@ -23,6 +23,31 @@ class _HomeFragmentState extends State<HomeFragment> {
   String barcode = Login.result;
   static Clinic _clinic;
 
+  Timer _timer;
+  int _start = 10;
+
+  void startTimer() {
+    const oneMinute = const Duration(seconds: 60);
+    _timer = new Timer.periodic(
+      oneMinute,
+          (Timer timer) => setState(
+            () {
+          if (_start < 1) {
+            timer.cancel();
+          } else {
+            _start = _start - 1;
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinc() async {
     final String url = words.Word.ip + "/clinic/thongtinkhambenh/" + barcode;
@@ -40,10 +65,15 @@ class _HomeFragmentState extends State<HomeFragment> {
 
   ///Man hinh kham benh
   Widget homeWidget(BuildContext context) {
+
     List<Clinical> clinicalData = _HomeFragmentState._clinic.lamSang;
     List<Subclinical> data = _HomeFragmentState._clinic.canLamSang;
+    _start =  clinicalData[index].thoiGianDuKien,
+    startTimer();
     return Scaffold(
         body: ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
             itemCount: clinicalData.length,
             itemBuilder: (BuildContext context, int index) {
               return ExpandableNotifier(
@@ -101,7 +131,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                   ),
                                 ),
                                 Text(
-                                  clinicalData[index].sttHienTai.toString(),
+                                  clinicalData[index].sttHienTai.toString()=='null'?'0': clinicalData[index].sttHienTai.toString(),
                                   style: TextStyle(
                                       color: Colors.blueAccent, fontSize: 25),
                                 ),
@@ -153,9 +183,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                         )),
 
                     // Cận lâm sàng
-                    expanded: SizedBox(
+                    expanded:/* SizedBox(
                         height: MediaQuery.of(context).size.height,
-                        child: GridView.builder(
+                        child:*/ GridView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
                             itemCount: data.length,
                             gridDelegate:
                                 new SliverGridDelegateWithFixedCrossAxisCount(
@@ -251,6 +283,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                   Text(
                                                     data[index]
                                                         .sttHienTai
+                                                        .toString()=='null'?'0': data[index]
+                                                        .sttHienTai
                                                         .toString(),
                                                     style: TextStyle(
                                                         color: Colors.lightBlue,
@@ -326,7 +360,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                   );
                                 },
                               );
-                            })),
+                            })/*)*/,
                     tapHeaderToExpand: true,
                     hasIcon: false,
                   )
@@ -365,4 +399,6 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
+
+
 }

@@ -27,7 +27,7 @@ class _ProfileFragment extends State<ProfileFragment> {
 
     if (response.statusCode == 200) {
 
-      _profile = Profile.fromJson(json.decode(response.body.substring(1,response.body.length-1)));
+      _profile = Profile.fromJson(json.decode(response.body));
       data1 = _profile.lastName+ " "+ _profile.middleName + " "+_profile.firstName;
       List<String> data4 = _profile.birthDay.substring(0,10).split('-');
       data2 = data4[2]+"/"+data4[1]+"/"+data4[0];
