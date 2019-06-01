@@ -177,6 +177,20 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           Text(
+                                            "Lầu " + _clinic.lamSang[index].tenLau,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          Text(
+                                            _clinic.lamSang[index].tenKhu,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                            ),
+                                          ),
+                                          Text(
                                             "Thời gian dự kiến",
                                             style: TextStyle(
                                                 color: Colors.blue[800],
@@ -293,6 +307,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                     children: <Widget>[
                                                       Text(
                                                         _clinic.canLamSang[index].tenPhong,
+                                                        maxLines: 2,
                                                         style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -333,6 +348,31 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                   TextAlign
                                                                       .right,
                                                             )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding: new EdgeInsets.symmetric(
+                                                            vertical: 5, horizontal: 0.0),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                          children: <Widget>[
+                                                            Text(
+                                                              "Lầu "+ _clinic.canLamSang[index].tenLau,
+                                                              style: TextStyle(
+                                                                  color: Colors.black,
+                                                                  fontSize: 15),
+                                                              textAlign: TextAlign.left,
+                                                            ),
+                                                            Text(
+                                                              _clinic.canLamSang[index].tenKhu,
+                                                              style: TextStyle(
+                                                                  color: Colors.black45,
+                                                                  fontSize: 15),
+                                                              textAlign: TextAlign.right,
+                                                            ),
                                                           ],
                                                         ),
                                                       ),

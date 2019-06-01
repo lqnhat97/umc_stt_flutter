@@ -22,32 +22,7 @@ class HomeFragment extends StatefulWidget {
 class _HomeFragmentState extends State<HomeFragment> {
   String barcode = Login.result;
   static Clinic _clinic;
-
-  Timer _timer;
-  int _start = 10;
-
-  void startTimer() {
-    const oneMinute = const Duration(seconds: 60);
-    _timer = new Timer.periodic(
-      oneMinute,
-          (Timer timer) => setState(
-            () {
-          if (_start < 1) {
-            timer.cancel();
-          } else {
-            _start = _start - 1;
-          }
-        },
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
+  static Timer timer;
   ///Lay thong tin kham benh
   Future<Clinic> fetchClinc() async {
     final String url = words.Word.ip + "/clinic/thongtinkhambenh/" + barcode;
@@ -63,13 +38,15 @@ class _HomeFragmentState extends State<HomeFragment> {
       throw Exception('Fail');
   }
 
+
   ///Man hinh kham benh
   Widget homeWidget(BuildContext context) {
-
+    timer = Timer.periodic(Duration(seconds: 5),(Timer t) => setState((){
+      fetchClinc().then((value)=>{ _clinic = value});
+    }));
     List<Clinical> clinicalData = _HomeFragmentState._clinic.lamSang;
     List<Subclinical> data = _HomeFragmentState._clinic.canLamSang;
-    _start =  clinicalData[index].thoiGianDuKien,
-    startTimer();
+
     return Scaffold(
         body: ListView.builder(
             scrollDirection: Axis.vertical,
@@ -104,6 +81,20 @@ class _HomeFragmentState extends State<HomeFragment> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
+                                  "Lầu " + clinicalData[index].tenLau,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  clinicalData[index].tenKhu,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
                                   "Thời gian dự kiến",
                                   style: TextStyle(
                                       color: Colors.blue[800],
@@ -131,7 +122,12 @@ class _HomeFragmentState extends State<HomeFragment> {
                                   ),
                                 ),
                                 Text(
-                                  clinicalData[index].sttHienTai.toString()=='null'?'0': clinicalData[index].sttHienTai.toString(),
+                                  clinicalData[index].sttHienTai.toString() ==
+                                          'null'
+                                      ? '0'
+                                      : clinicalData[index]
+                                          .sttHienTai
+                                          .toString(),
                                   style: TextStyle(
                                       color: Colors.blueAccent, fontSize: 25),
                                 ),
@@ -183,9 +179,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                         )),
 
                     // Cận lâm sàng
-                    expanded:/* SizedBox(
+                    expanded:
+                        /* SizedBox(
                         height: MediaQuery.of(context).size.height,
-                        child:*/ GridView.builder(
+                        child:*/
+                        GridView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             itemCount: data.length,
@@ -206,7 +204,10 @@ class _HomeFragmentState extends State<HomeFragment> {
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              data[index].tenPhong,
+                                              data[index].tenPhong == 'null'
+                                                  ? 'Xét nghiệm'
+                                                  : data[index].tenPhong,
+                                              maxLines: 2,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.blueAccent,
@@ -229,15 +230,45 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                     textAlign: TextAlign.left,
                                                   ),
                                                   Text(
-                                                    data[index].maPhongCls,
+                                                    data[index].maPhongCls ==
+                                                            'null'
+                                                        ? 'Xét nghiệm'
+                                                        : data[index]
+                                                            .maPhongCls,
                                                     style: TextStyle(
                                                         color: Colors.black45,
                                                         fontSize: 15),
                                                     textAlign: TextAlign.right,
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                             ),
+                                            Container(
+                                              padding: new EdgeInsets.symmetric(
+                                                  vertical: 5, horizontal: 0.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Text(
+                                                    "Lầu "+ data[index].tenLau,
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  Text(
+                                                    data[index].tenKhu,
+                                                    style: TextStyle(
+                                                        color: Colors.black45,
+                                                        fontSize: 15),
+                                                    textAlign: TextAlign.right,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
                                             Container(
                                               padding: new EdgeInsets.symmetric(
                                                   vertical: 5, horizontal: 0.0),
@@ -281,11 +312,11 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                     textAlign: TextAlign.left,
                                                   ),
                                                   Text(
-                                                    data[index]
-                                                        .sttHienTai
-                                                        .toString()=='null'?'0': data[index]
-                                                        .sttHienTai
-                                                        .toString(),
+                                                    data[index].sttHienTai ==
+                                                            'null'
+                                                        ? '0'
+                                                        : data[index]
+                                                            .sttHienTai,
                                                     style: TextStyle(
                                                         color: Colors.lightBlue,
                                                         fontSize: 15,
@@ -327,7 +358,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                               FontWeight.bold),
                                                       textAlign:
                                                           TextAlign.right,
-                                                    )
+                                                    ),
                                                   ],
                                                 )),
                                           ],
@@ -360,7 +391,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                   );
                                 },
                               );
-                            })/*)*/,
+                            }) /*)*/,
                     tapHeaderToExpand: true,
                     hasIcon: false,
                   )
@@ -372,6 +403,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   Widget build(BuildContext context) {
     // TODO: implement build
     //return homeWidget(context);
+
     return Scaffold(
       appBar: PreferredSize(
           child: AppBar(
@@ -399,6 +431,4 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
-
-
 }
