@@ -15,12 +15,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   Future<dynamic> fetchClinc(String barcodeResult) async {
-    if(barcodeResult != "") {
+    if (barcodeResult != "") {
       final String url =
-          words.Word.ip + "/clinic/thongtinkhambenh/" +
-              barcodeResult;
+          words.Word.ip + "/clinic/thongtinkhambenh/" + barcodeResult;
       final response = await http.get(url);
       //Neu thong tin tra ve la dung
       if (response.statusCode == 200) {
@@ -39,7 +37,6 @@ class _LoginState extends State<Login> {
         Login.result = barcodeResult;
       });
       fetchClinc(barcodeResult);
-
     } on PlatformException catch (ex) {
       if (ex.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {
@@ -67,12 +64,8 @@ class _LoginState extends State<Login> {
         children: <Widget>[
           Container(
             decoration: new BoxDecoration(
-                gradient: new LinearGradient(
-                    colors: [const Color(0xFF33C8F2), const Color(0xFF5661F9)],
-                    begin: FractionalOffset.topRight,
-                    end: FractionalOffset.bottomLeft,
-                    stops: [0.4, 1.0],
-                    tileMode: TileMode.clamp)),
+                image: DecorationImage(
+                    image: AssetImage('images/LOGIN 1.jpg'),fit: BoxFit.fill)),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,13 +73,8 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 50,
               ),
-              Image.asset(
-                'images/umc_logo.jpg',
-                height: 200,
-                width: 200,
-              ),
               const SizedBox(
-                height: 150,
+                height: 450,
               ),
               Text(words.Word.Login_Guide,
                   style: new TextStyle(
@@ -96,15 +84,15 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 30,
               ),
-              FloatingActionButton.extended(
+             /* FloatingActionButton.extended(
                   onPressed: _scanBarcode,
                   icon: Icon(Icons.camera),
-                  label: Text(words.Word.Login_Scan))
-              /*GestureDetector(
+                  label: Text(words.Word.Login_Scan))*/
+              GestureDetector(
                 onTap: _scanBarcode,
-                child: Image.asset('images/barcode.jpg',
-                    fit: BoxFit.cover, alignment: new Alignment(-1.0, -1.5)),
-              ),*/
+                child: Image.asset('images/barcode.png',
+                    height: 120,width: 120, alignment: new Alignment(-1.0, -1.5)),
+              ),
             ],
           )
         ],
