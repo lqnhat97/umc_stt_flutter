@@ -30,7 +30,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   @override
-  void dispose() {
+  Future dispose() async {
     // TODO: implement dispose
     super.dispose();
     _tabController.dispose();
@@ -114,5 +114,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       _currentIndex = _tabController.index;
     });
   }
+
+
 }
 

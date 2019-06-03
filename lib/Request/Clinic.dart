@@ -17,7 +17,13 @@ class Clinic {
 }
 
 class Subclinical {
-  String maPhongCls, tenPhong = "?", thoiGianDuKien, tenKhu, tenLau,sttHienTai;
+  String maPhongCls,
+      tenPhong = "?",
+      thoiGianDuKien,
+      tenKhu,
+      tenLau,
+      sttHienTai,
+      sttXetNghiem;
   int stt;
 
   Subclinical(
@@ -27,7 +33,8 @@ class Subclinical {
       this.sttHienTai,
       this.thoiGianDuKien,
       this.tenKhu,
-      this.tenLau});
+      this.tenLau,
+      this.sttXetNghiem});
 
   factory Subclinical.fromJson(Map<String, dynamic> json) {
     return Subclinical(
@@ -37,12 +44,13 @@ class Subclinical {
         sttHienTai: json['sttHienTai'],
         thoiGianDuKien: json['thoiGianDuKien'],
         tenKhu: json['tenKhu'],
-        tenLau: json['tenLau']);
+        tenLau: json['tenLau'],
+        sttXetNghiem: json['sttXetNghiem']);
   }
 }
 
 class Clinical {
-  String maPhong, thoiGianDuKien, tenChuyenKhoa, tenKhu, tenLau;
+  String maPhong, thoiGianDuKien, tenChuyenKhoa, tenKhu, tenLau, maPhieuKham;
   int stt, sttHienTai;
 
   Clinical(
@@ -52,7 +60,8 @@ class Clinical {
       this.thoiGianDuKien,
       this.tenChuyenKhoa,
       this.tenKhu,
-      this.tenLau});
+      this.tenLau,
+      this.maPhieuKham});
 
   factory Clinical.fromJson(Map<String, dynamic> json) {
     return Clinical(
@@ -62,6 +71,7 @@ class Clinical {
         thoiGianDuKien: json['thoiGianDuKien'],
         tenChuyenKhoa: json['tenChuyenKhoa'],
         tenKhu: json['tenKhu'],
-        tenLau: json['tenLau']);
+        tenLau: json['tenLau'],
+        maPhieuKham: json['maPhieuKham']);
   }
 }
