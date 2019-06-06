@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/Home/Home.dart';
+import 'package:flutter_app/Nurse/NurseState.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
 import 'package:http/http.dart' as http;
 
@@ -15,15 +16,22 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  Future<dynamic> fetchClinc(String barcodeResult) async {
+  Future<dynamic> fetchClinic(String barcodeResult) async {
     if (barcodeResult != "") {
       final String url =
           words.Word.ip + "/clinic/thongtinkhambenh/" + barcodeResult;
+      final String url2 =
+          words.Word.ip + "/clinic/thuki/" + barcodeResult;
       final response = await http.get(url);
+      final response2 = await http.get(url2);
       //Neu thong tin tra ve la dung
       if (response.statusCode == 200) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Home()));
+      }
+      if (response2.statusCode == 200) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => NurseState()));
       } else
         throw Exception('Fail');
     }
@@ -36,7 +44,7 @@ class _LoginState extends State<Login> {
       setState(() {
         Login.result = barcodeResult;
       });
-      fetchClinc(barcodeResult);
+      fetchClinic(barcodeResult);
     } on PlatformException catch (ex) {
       if (ex.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {
@@ -65,12 +73,11 @@ class _LoginState extends State<Login> {
           Container(
             decoration: new BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/LOGIN 1.jpg'),fit: BoxFit.fill)),
+                    image: AssetImage('images/LOGIN 1.jpg'), fit: BoxFit.fill)),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-
               const SizedBox(
                 height: 450,
               ),
@@ -82,14 +89,16 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 30,
               ),
-             /* FloatingActionButton.extended(
+              /* FloatingActionButton.extended(
                   onPressed: _scanBarcode,
                   icon: Icon(Icons.camera),
                   label: Text(words.Word.Login_Scan))*/
               GestureDetector(
                 onTap: _scanBarcode,
                 child: Image.asset('images/barcode.png',
-                    height: 120,width: 120, alignment: new Alignment(-1.0, -1.5)),
+                    height: 120,
+                    width: 120,
+                    alignment: new Alignment(-1.0, -1.5)),
               ),
             ],
           )

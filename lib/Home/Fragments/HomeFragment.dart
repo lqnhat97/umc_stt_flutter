@@ -22,6 +22,7 @@ class HomeFragment extends StatefulWidget {
   }
 }
 
+
 class _HomeFragmentState extends State<HomeFragment> {
   mSharedPreferencesTest prefs;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
@@ -53,7 +54,6 @@ class _HomeFragmentState extends State<HomeFragment> {
       dataSub = fetchClinic().asStream().listen((Clinic data) {
         this.setState(() {
           _clinic = data;
-
         });
       });
     });
@@ -152,7 +152,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       return Colors.red;
     }
     if ((tmp <= userNotiTime * 60)) {
-      return Colors.yellow;
+      return Colors.orange;
     } else {
       return Colors.blueAccent;
     }
@@ -170,7 +170,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       return Colors.red;
     }
     if ((tmp <= userNotiTime * 60)) {
-      return Colors.yellow;
+      return Colors.orange;
     } else {
       return Colors.blueAccent;
     }
@@ -344,7 +344,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                     Text(
                                       clinicalData[index].maPhieuKham,
                                       style: TextStyle(
-                                        color: Colors.amber,
+                                        color: Colors.blue[700],
                                         fontSize: 25,
                                       ),
                                     ),
@@ -379,7 +379,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                 horizontal: 25.0),
                                             decoration: BoxDecoration(
                                               border: Border.all(
-                                                  color: Colors.blue[700],
+                                                  color:colorByState(clinicalData[index]),
                                                   width: 2.0),
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -398,7 +398,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                       .stt
                                                       .toString(),
                                                   style: TextStyle(
-                                                    color: Colors.blue[700],
+                                                    color: colorByState(clinicalData[index]),
                                                     fontSize: 40,
                                                   ),
                                                 )
@@ -621,8 +621,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                               .stt
                                                               .toString(),
                                                           style: TextStyle(
-                                                              color: Colors
-                                                                  .redAccent,
+                                                              color: colorSubByState(data[index]),
                                                               fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
@@ -701,6 +700,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
+
 
   @override
   void dispose() {

@@ -15,7 +15,6 @@ class HistoryRequest {
 
 class HistoryRequestList {
   final List<HistoryRequest> list;
-
   HistoryRequestList({
     this.list,
   });
