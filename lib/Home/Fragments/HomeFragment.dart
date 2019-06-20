@@ -22,7 +22,6 @@ class HomeFragment extends StatefulWidget {
   }
 }
 
-
 class _HomeFragmentState extends State<HomeFragment> {
   mSharedPreferencesTest prefs;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
@@ -48,9 +47,10 @@ class _HomeFragmentState extends State<HomeFragment> {
     _flutterLocalNotificationsPlugin.initialize(initSetting,
         onSelectNotification: onSelectNotification);
     fetchClinic();
+
     // defines a timer
 
-    timer = Timer.periodic(Duration(seconds: 15), (Timer t) async {
+    timer = Timer.periodic(Duration(seconds: 5), (Timer t) async {
       dataSub = fetchClinic().asStream().listen((Clinic data) {
         this.setState(() {
           _clinic = data;
@@ -58,12 +58,11 @@ class _HomeFragmentState extends State<HomeFragment> {
       });
     });
 
-    timer2 = Timer.periodic(Duration(seconds: 1), (Timer t) {
+    timer2 = Timer.periodic(Duration(seconds: 1), (Timer t) async {
       this.setState(() {
         now = DateTime.now();
       });
     });
-
   }
 
   ///Lay thong tin kham benh
@@ -141,6 +140,9 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Color colorByState(Clinical data1) {
+    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
+      return Colors.grey;
+    }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
@@ -159,6 +161,9 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Color colorSubByState(Subclinical data1) {
+    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
+      return Colors.grey;
+    }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
@@ -176,82 +181,117 @@ class _HomeFragmentState extends State<HomeFragment> {
     }
   }
 
+  String sttTheoTinhTrangClinical(Clinical data) {
+    if (data.tinhTrang == 'Đã khám' || data.tinhTrang == 'Đang khám') {
+      return data.tinhTrang;
+    } else {
+      return data.stt.toString();
+    }
+  }
 
-  void buildNotification(){
+  String sttTheoTinhTrangSubclinical(Subclinical data) {
+    if (data.tinhTrang == 'Đã khám' || data.tinhTrang == 'Đang khám') {
+      return data.tinhTrang;
+    } else {
+      if (data.sttXetNghiem !=null){
+        if(data.stt <= int.parse(data.sttXetNghiem.split("->")[1]));
+        {
+          return 'Đang khám';
+        }
+      }
+      return data.stt.toString();
+    }
+  }
+
+  void buildNotification() {
     int channel_id_for_all = 0;
     _clinic.lamSang.forEach((clinical) {
-      int tmp = clinical.sttHienTai - clinical.stt;
-      int notiTime;
-      int displayTime;
-      if (tmp >= 0 && tmp <= 2) {
-        notiTime = 0;
-        displayTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) *
-            3600 +
-            int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
-      } else {
-        notiTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) * 3600 +
-            int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
-        displayTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) *
-            3600 +
-            int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
+      if (clinical.tinhTrang != 'Đã khám' &&
+          clinical.tinhTrang != 'Đang khám') {
+        int tmp = clinical.sttHienTai - clinical.stt;
+        int notiTime;
+        int displayTime;
+        if (tmp >= 0 && tmp <= 2) {
+          notiTime = 0;
+          displayTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) *
+                          3600 +
+                      int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
+                  (now.hour * 3600 + now.minute * 60)) -
+              userNotiTime * 60;
+        } else {
+          notiTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) * 3600 +
+                      int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
+                  (now.hour * 3600 + now.minute * 60)) -
+              userNotiTime * 60;
+          displayTime = ((int.parse(clinical.thoiGianDuKien.split(':')[0]) *
+                          3600 +
+                      int.parse(clinical.thoiGianDuKien.split(':')[1]) * 60) -
+                  (now.hour * 3600 + now.minute * 60)) -
+              userNotiTime * 60;
+        }
+        _showNotificationWithDefaultSound(
+            channel_id_for_all,
+            (displayTime >= 0 && displayTime < userNotiTime * 60
+                    ? displayTime.toString() + " phút tới giờ hẹn phòng khám "
+                    : "Đã đến giờ khám ") +
+                clinical.tenChuyenKhoa,
+            "Hãy đến " +
+                clinical.maPhong +
+                " tại " +
+                clinical.tenKhu +
+                " Lầu " +
+                clinical.tenLau,
+            notiTime);
+        channel_id_for_all++;
       }
-      _showNotificationWithDefaultSound(
-          channel_id_for_all,
-          (displayTime >= 0 ? displayTime.toString()+" phút tới giờ hẹn phòng khám "  :"Đã đến giờ khám " ) +
-              clinical.tenChuyenKhoa,
-          "Hãy đến " +
-              clinical.maPhong +
-              " tại " +
-              clinical.tenKhu +
-              " Lầu " +
-              clinical.tenLau,
-          notiTime);
-      channel_id_for_all++;
     });
 
     _clinic.canLamSang.forEach((subClinical) {
-      int tmp = (int.parse(subClinical.sttHienTai) - subClinical.stt);
-      int notiTime;
-      int displayTime;
-      if (tmp >= 0 && tmp <= 2) {
-        notiTime = 0;
-        displayTime = ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) *
-            3600 +
-            int.parse(subClinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
-      } else {
-        notiTime = ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) *
-            3600 +
-            int.parse(subClinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
-        displayTime = ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) *
-            3600 +
-            int.parse(subClinical.thoiGianDuKien.split(':')[1]) * 60) -
-            (now.hour * 3600 + now.minute * 60)) -
-            userNotiTime * 60;
+      if (subClinical.tinhTrang != 'Đang khám' &&
+          subClinical.tinhTrang != 'Đã khám') {
+        int tmp = (int.parse(subClinical.sttHienTai) - subClinical.stt);
+        int notiTime;
+        int displayTime;
+        if (tmp >= 0 && tmp <= 2) {
+          notiTime = 0;
+          displayTime =
+              ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) * 3600 +
+                          int.parse(subClinical.thoiGianDuKien.split(':')[1]) *
+                              60) -
+                      (now.hour * 3600 + now.minute * 60)) -
+                  userNotiTime * 60;
+        } else {
+          notiTime =
+              ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) * 3600 +
+                          int.parse(subClinical.thoiGianDuKien.split(':')[1]) *
+                              60) -
+                      (now.hour * 3600 + now.minute * 60)) -
+                  userNotiTime * 60;
+          displayTime =
+              ((int.parse(subClinical.thoiGianDuKien.split(':')[0]) * 3600 +
+                          int.parse(subClinical.thoiGianDuKien.split(':')[1]) *
+                              60) -
+                      (now.hour * 3600 + now.minute * 60)) -
+                  userNotiTime * 60;
+        }
+        _showNotificationWithDefaultSound(
+            channel_id_for_all,
+            (displayTime >= 0 && displayTime < userNotiTime * 60
+                    ? displayTime.toString() + " phút tới giờ hẹn cận lâm sàng "
+                    : "Đã đến giờ thực hiện ") +
+                subClinical.tenPhong,
+            "Hãy đến " +
+                subClinical.maPhongCls +
+                " tại " +
+                subClinical.tenKhu +
+                " Lầu " +
+                subClinical.tenLau,
+            notiTime);
+        channel_id_for_all++;
       }
-      _showNotificationWithDefaultSound(
-          channel_id_for_all,
-          (displayTime >= 0 ? displayTime.toString()+" phút tới giờ hẹn cận lâm sàng "  :"Đã đến giờ thực hiện " ) +
-              subClinical.tenPhong,
-          "Hãy đến " +
-              subClinical.maPhongCls +
-              " tại " +
-              subClinical.tenKhu +
-              " Lầu " +
-              subClinical.tenLau,
-          notiTime);
-      channel_id_for_all++;
     });
   }
+
   ///Man hinh kham benh
   Widget homeWidget(BuildContext context) {
     buildNotification();
@@ -286,7 +326,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                             maxWidth: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.35),
+                                                0.3),
                                         child: Wrap(
                                             alignment: WrapAlignment.center,
                                             children: <Widget>[
@@ -379,7 +419,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                 horizontal: 25.0),
                                             decoration: BoxDecoration(
                                               border: Border.all(
-                                                  color:colorByState(clinicalData[index]),
+                                                  color: colorByState(
+                                                      clinicalData[index]),
                                                   width: 2.0),
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -393,15 +434,16 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                     fontSize: 25,
                                                   ),
                                                 ),
-                                                Text(
-                                                  clinicalData[index]
-                                                      .stt
-                                                      .toString(),
+                                                Flexible(
+                                                    child: Text(
+                                                  sttTheoTinhTrangClinical(
+                                                      clinicalData[index]),
                                                   style: TextStyle(
-                                                    color: colorByState(clinicalData[index]),
-                                                    fontSize: 40,
+                                                    color: colorByState(
+                                                        clinicalData[index]),
+                                                    fontSize: 25,
                                                   ),
-                                                )
+                                                ))
                                               ],
                                             ),
                                           )
@@ -578,7 +620,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                       Text(
                                                         data[index].sttXetNghiem ==
                                                                 'null'
-                                                            ? data[index].sttHienTai
+                                                            ? data[index]
+                                                                .sttHienTai
                                                             : data[index]
                                                                 .sttXetNghiem,
                                                         style: TextStyle(
@@ -594,43 +637,46 @@ class _HomeFragmentState extends State<HomeFragment> {
                                                     ],
                                                   ),
                                                 ),
-                                                Container(
-                                                    padding: new EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 5,
-                                                        horizontal: 0.0),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: <Widget>[
-                                                        Text(
-                                                          "Số của bạn",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                        ),
-                                                        Text(
-                                                          data[index]
-                                                              .stt
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              color: colorSubByState(data[index]),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                          textAlign:
-                                                              TextAlign.right,
-                                                        ),
-                                                      ],
-                                                    )),
+                                                Flexible(
+                                                  child: Container(
+                                                      padding: new EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 5,
+                                                          horizontal: 0.0),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: <Widget>[
+                                                          Text(
+                                                            "Số của bạn",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                          ),
+                                                          Text(
+                                                            sttTheoTinhTrangSubclinical(
+                                                                data[index]),
+                                                            style: TextStyle(
+                                                                color: colorSubByState(
+                                                                    data[
+                                                                        index]),
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                          ),
+                                                        ],
+                                                      )),
+                                                ),
                                               ],
                                             )),
                                       )),
@@ -700,7 +746,6 @@ class _HomeFragmentState extends State<HomeFragment> {
       ),
     );
   }
-
 
   @override
   void dispose() {

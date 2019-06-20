@@ -89,6 +89,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
   }
 
   Color colorByState(Clinical data1) {
+    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
+      return Colors.grey;
+    }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
@@ -107,6 +110,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
   }
 
   Color colorSubByState(Subclinical data1) {
+    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
+      return Colors.grey;
+    }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
@@ -121,6 +127,22 @@ class _SearchedPatientState extends State<SearchedPatient> {
       return Colors.orange;
     } else {
       return Colors.blueAccent;
+    }
+  }
+
+  String sttTheoTinhTrangClinical(Clinical data) {
+    if (data.tinhTrang == 'Đã khám' || data.tinhTrang == 'Đang khám') {
+      return data.tinhTrang;
+    } else {
+      return data.stt.toString();
+    }
+  }
+
+  String sttTheoTinhTrangSubclinical(Subclinical data) {
+    if (data.tinhTrang == 'Đã khám' || data.tinhTrang == 'Đang khám') {
+      return data.tinhTrang;
+    } else {
+      return data.stt.toString();
     }
   }
 
@@ -356,11 +378,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                               ),
                                                             ),
                                                             Text(
-                                                              _clinic
-                                                                  .lamSang[
-                                                                      index]
-                                                                  .stt
-                                                                  .toString(),
+                                                              sttTheoTinhTrangClinical(
+                                                                  _clinic.lamSang[
+                                                                      index]),
                                                               style: TextStyle(
                                                                 color: colorByState(
                                                                     _clinic.lamSang[
@@ -635,11 +655,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                                                               .left,
                                                                     ),
                                                                     Text(
-                                                                      _clinic
-                                                                          .canLamSang[
-                                                                              index]
-                                                                          .stt
-                                                                          .toString(),
+                                                                      sttTheoTinhTrangSubclinical(
+                                                                          _clinic
+                                                                              .canLamSang[index]),
                                                                       style: TextStyle(
                                                                           color: colorSubByState(_clinic.canLamSang[
                                                                               index]),
@@ -700,7 +718,6 @@ class _SearchedPatientState extends State<SearchedPatient> {
           }
         });
   }
-
 
   @override
   void dispose() {

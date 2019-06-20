@@ -25,9 +25,9 @@ class _SettingFragmentState extends State<SettingFragment> {
   final mSharedPreferencesTest prefs = new mSharedPreferencesTest();
 
   //init Nofitication
-  Future init() async{
-    notifications.initialize(InitializationSettings(AndroidInitializationSettings('@mipmap/ic_launcher'), IOSInitializationSettings()));
-  }
+//  Future init() async{
+//    notifications.initialize(InitializationSettings(AndroidInitializationSettings('@mipmap/ic_launcher'), IOSInitializationSettings()));
+//  }
 
 
 
@@ -133,7 +133,7 @@ class _SettingFragmentState extends State<SettingFragment> {
       _currentTime = value;
 
     });
-      _showNotificationWithoutSound();
+//      _showNotificationWithoutSound();
 
   }
 
@@ -151,7 +151,7 @@ class _SettingFragmentState extends State<SettingFragment> {
       )
     );
   }
-  Future _showNotificationWithoutSound() async {
+ /* Future _showNotificationWithoutSound() async {
     var scheduledNotificationDateTime = DateTime.now().add(Duration(minutes: 1));
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'umc_notification', 'UMC Notification', '',
@@ -169,6 +169,6 @@ class _SettingFragmentState extends State<SettingFragment> {
       platformChannelSpecifics,
       payload: 'tên phòng',
     );
-  }
+  }*/
 
 }

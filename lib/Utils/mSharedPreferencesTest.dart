@@ -29,7 +29,7 @@ class mSharedPreferencesTest {
   Future<int> getTime() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    return (prefs.getInt(_kTime) ?? 5);
+    return prefs.getInt(_kTime) ?? 5;
   }
 
   /// ----------------------------------------------------------

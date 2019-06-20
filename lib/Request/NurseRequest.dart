@@ -6,8 +6,7 @@ class NurseRequest {
       Lau,
       soPhong,
       caKham,
-      STTCuoi,
-      STTHienTai,
+
       idPhong;
   List<ClinicTable> danhSachBan;
 
@@ -18,8 +17,6 @@ class NurseRequest {
       this.Lau,
       this.soPhong,
       this.caKham,
-      this.STTCuoi,
-      this.STTHienTai,
       this.danhSachBan,
       this.idPhong,
       this.tenThuKi});
@@ -35,25 +32,26 @@ class NurseRequest {
         Lau: json['Lau'],
         soPhong: json['soPhong'],
         caKham: json['caKham'],
-        STTCuoi: json['STTCuoi'],
-        STTHienTai: json['STTHienTai'],
-        danhSachBan:list,
-        idPhong: json['idPhong'],
+                danhSachBan:list,
+        idPhong: json['IDPhong'],
         tenThuKi: json['tenThuKi']);
   }
 }
 
 class ClinicTable {
-  bool checkVal =false;
-  String IDBan, soBan, bacSi, BenhNhan;
 
-  ClinicTable({this.IDBan, this.soBan, this.bacSi, this.BenhNhan});
+  String IDBan, soBan, bacSi, BenhNhan,STTCuoi,
+      STTHienTai;
+
+  ClinicTable({this.IDBan, this.soBan, this.bacSi, this.BenhNhan,this.STTCuoi,this.STTHienTai});
 
   factory ClinicTable.fromJson(Map<String, dynamic> json) {
     return ClinicTable(
         IDBan: json['IDBan'],
         soBan: json['soBan'],
         bacSi: json['bacSi'],
-        BenhNhan: json['BenhNhan']);
+        BenhNhan: json['BenhNhan'],
+        STTCuoi: json['STTCuoi'],
+        STTHienTai: json['STTHienTai']);
   }
 }

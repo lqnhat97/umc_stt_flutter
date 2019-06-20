@@ -20,8 +20,7 @@ class _LoginState extends State<Login> {
     if (barcodeResult != "") {
       final String url =
           words.Word.ip + "/clinic/thongtinkhambenh/" + barcodeResult;
-      final String url2 =
-          words.Word.ip + "/clinic/thuki/" + barcodeResult;
+      final String url2 = words.Word.ip + "/clinic/thuki/" + barcodeResult;
       final response = await http.get(url);
       final response2 = await http.get(url2);
       //Neu thong tin tra ve la dung
@@ -29,11 +28,24 @@ class _LoginState extends State<Login> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Home()));
       }
-      if (response2.statusCode == 200) {
+      else if (response2.statusCode == 200) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => NurseState()));
-      } else
-        throw Exception('Fail');
+      } else {
+        AlertDialog alertDialog = new AlertDialog(
+            title: new Text("Lỗi"),
+            content: new Text("Không tìm thấy bệnh nhân"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("Đóng"),
+                onPressed: () {
+                  Navigator.of(this.context).pop();
+                },
+              )
+            ]);
+        showDialog(context: this.context, child: alertDialog);
+      }
     }
   }
 
