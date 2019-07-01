@@ -1,17 +1,12 @@
 class NurseRequest {
   bool isCLS;
-  String tenThuKi,
-      tenChuyenKhoa,
-      tenKhuVuc,
-      Lau,
-      soPhong,
-      caKham,
-
-      idPhong;
+  bool isXetNghiem;
+  String tenThuKi, tenChuyenKhoa, tenKhuVuc, Lau, soPhong, caKham, idPhong;
   List<ClinicTable> danhSachBan;
 
   NurseRequest(
-      {this.isCLS,
+      {this.isXetNghiem,
+      this.isCLS,
       this.tenChuyenKhoa,
       this.tenKhuVuc,
       this.Lau,
@@ -24,26 +19,32 @@ class NurseRequest {
   factory NurseRequest.fromJson(Map<String, dynamic> json) {
     var ListBan = json['danhSachBan'] as List;
     List<ClinicTable> list =
-    ListBan.map((i) => ClinicTable.fromJson(i)).toList();
+        ListBan.map((i) => ClinicTable.fromJson(i)).toList();
     return NurseRequest(
+        isXetNghiem: json['isXetNghiem'],
         isCLS: json['isCLS'],
         tenChuyenKhoa: json['tenChuyenKhoa'],
         tenKhuVuc: json['tenKhuVuc'],
         Lau: json['Lau'],
         soPhong: json['soPhong'],
         caKham: json['caKham'],
-                danhSachBan:list,
+        danhSachBan: list,
         idPhong: json['IDPhong'],
         tenThuKi: json['tenThuKi']);
   }
 }
 
 class ClinicTable {
+  String IDBan, soBan, bacSi, BenhNhan, STTCuoi, STTHienTai, SoLuongRequest;
 
-  String IDBan, soBan, bacSi, BenhNhan,STTCuoi,
-      STTHienTai;
-
-  ClinicTable({this.IDBan, this.soBan, this.bacSi, this.BenhNhan,this.STTCuoi,this.STTHienTai});
+  ClinicTable(
+      {this.IDBan,
+      this.soBan,
+      this.bacSi,
+      this.BenhNhan,
+      this.STTCuoi,
+      this.STTHienTai,
+      this.SoLuongRequest});
 
   factory ClinicTable.fromJson(Map<String, dynamic> json) {
     return ClinicTable(
@@ -52,6 +53,7 @@ class ClinicTable {
         bacSi: json['bacSi'],
         BenhNhan: json['BenhNhan'],
         STTCuoi: json['STTCuoi'],
-        STTHienTai: json['STTHienTai']);
+        STTHienTai: json['STTHienTai'],
+        SoLuongRequest: json['SoLuongRequest']);
   }
 }

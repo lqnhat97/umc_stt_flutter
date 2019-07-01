@@ -14,7 +14,7 @@ description: UMC.STT application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -29,13 +29,26 @@ dependencies:
   expandable: ^2.1.0+3
   flutter_local_notifications: ^0.6.1
   flutter_calendar_carousel: ^1.3.16
-  shared_preferences: ^0.5.2
+  shared_preferences: ^0.5.3+1
+  flutter_launcher_icons: ^0.7.2
 
+flutter_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "/images/ic_launcher.png"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  cupertino_icons: ^0.1.2
+  barcode_scan: ^1.0.0
+  http: ^0.12.0+2
+  json_serializable: ^2.1.1
+  expandable: ^2.1.0+3
+  flutter_local_notifications: ^0.6.1
+  flutter_calendar_carousel: ^1.3.16
+  shared_preferences: ^0.5.2
+  flutter_launcher_icons: ^0.7.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

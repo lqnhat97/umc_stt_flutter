@@ -14,5 +14,6 @@ class Word{
   static final Login_Guide = "Đưa barcode vào vùng quét";
 
   //IP
-  static final ip = "http://192.168.43.128:8088";
+  static final ip = "http://113.172.180.190:8088";
+
 }

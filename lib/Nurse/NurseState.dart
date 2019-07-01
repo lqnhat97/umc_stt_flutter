@@ -5,6 +5,8 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
+import 'package:flutter_app/Request/Confirm.dart';
+import 'package:flutter_app/Request/ConfirmNurse.dart';
 import 'package:flutter_app/Request/NurseRequest.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
 import 'package:http/http.dart' as http;
@@ -38,7 +40,8 @@ class _NurseState extends State<NurseState> {
 
     _timer = Timer.periodic(Duration(seconds: 3), (Timer t) async {
       dataSub = fetchNurseClinic().asStream().listen((NurseRequest data) {
-        this.setState(() {
+        if (!mounted) return;
+        setState(() {
           _nurseRequest = data;
         });
       });
@@ -54,7 +57,6 @@ class _NurseState extends State<NurseState> {
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200) {
       _nurseRequest = NurseRequest.fromJson(json.decode(response.body));
-
       return _nurseRequest;
       //});
     } else
@@ -87,7 +89,7 @@ class _NurseState extends State<NurseState> {
         Flexible(
             child: RaisedButton(
           shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(30.0)),
+              borderRadius: new BorderRadius.circular(10.0)),
           onPressed: () {
             doSomeThing(index).then((dynamic) => {});
             fetchNurseClinic().then((data) => {
@@ -98,20 +100,6 @@ class _NurseState extends State<NurseState> {
             setState(() {
               _checkList[index] = false;
             });
-//            AlertDialog alertDialog = new AlertDialog(
-//                title: new Text("Đã qua số"),
-//                content: new Text(
-//                    "Tăng số tại bàn " + nurseRequest.danhSachBan[index].soBan),
-//                actions: <Widget>[
-//                  // usually buttons at the bottom of the dialog
-//                  new FlatButton(
-//                    child: new Text("Close"),
-//                    onPressed: () {
-//                      Navigator.of(this.context).pop();
-//                    },
-//                  )
-//                ]);
-//            showDialog(context: this.context, child: alertDialog);
           },
           padding: const EdgeInsets.all(0.0),
           child: Container(
@@ -125,31 +113,34 @@ class _NurseState extends State<NurseState> {
                 style: TextStyle(fontSize: 20, color: Colors.white)),
           ),
         )),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.green,
-            border: Border.all(color: Colors.white, width: 2.0),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          margin: const EdgeInsets.fromLTRB(50.0, 25.0, 0.0, 25.0),
-          padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0, 10.0),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Xác nhận",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
+        (nurseRequest.isXetNghiem
+            ? Container()
+            : Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  border: Border.all(color: Colors.white, width: 2.0),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                Checkbox(
-                    value: _checkList[index],
-                    onChanged: (bool value) {
-                      onCheckBoxChange(index);
-                      setState(() {
-                        _checkList[index] = value;
-                      });
-                    })
-              ]),
-        )
+                margin: const EdgeInsets.fromLTRB(50.0, 25.0, 0.0, 25.0),
+                padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0, 10.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Xác nhận",
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                      Checkbox(
+                          value: _checkList[index],
+                          onChanged: (bool value) {
+                            onCheckBoxChange(index);
+                            setState(() {
+                              _checkList[index] = value;
+                            });
+                          })
+                    ]),
+              )),
+        myFloatingButton(nurseRequest.danhSachBan[index], index)
       ],
     );
   }
@@ -246,15 +237,6 @@ class _NurseState extends State<NurseState> {
 
   Widget buildClinicalWidget(NurseRequest nurseRequest, BuildContext context) {
     return Scaffold(
-        floatingActionButton: myFloatingButton(),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.blueAccent,
-          child: Container(
-            height: MediaQuery.of(this.context).size.height * 0.00,
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         appBar: mAppBar(nurseRequest),
         body: SafeArea(
             left: true,
@@ -401,10 +383,13 @@ class _NurseState extends State<NurseState> {
     Map<String, dynamic> match = _nurseRequest.isCLS
         ? {
             "idPhong": _nurseRequest.idPhong,
+            "isXetNghiem": _nurseRequest.isXetNghiem,
+            "caKham":_nurseRequest.caKham
           }
         : {
             "idPhong": _nurseRequest.idPhong,
             "idBanKham": _nurseRequest.danhSachBan[index].IDBan,
+            "caKham":_nurseRequest.caKham
           };
     var headers = {'Content-Type': 'application/json'};
     String jsonString = json.encode(match);
@@ -423,7 +408,7 @@ class _NurseState extends State<NurseState> {
     Map<String, dynamic> match = _nurseRequest.isCLS
         ? {
             "idPhongKham": _nurseRequest.idPhong,
-
+            "isXetNghiem": _nurseRequest.isXetNghiem,
             "CaKham": _nurseRequest.caKham,
             "stt": int.parse(_nurseRequest.danhSachBan[index].STTHienTai)
           }
@@ -461,71 +446,171 @@ class _NurseState extends State<NurseState> {
 
   final myController = TextEditingController();
 
-  _onClicked() {
+  ListConfirmNurse confirmRequest;
+
+  fetchRequest(ClinicTable ban) async {
+    final String url = words.Word.ip +
+        (_nurseRequest.isCLS
+            ? "/clinic/danhSachYeuCauCanLamSang/?idPhong=" +
+                _nurseRequest.idPhong +
+                "&caKham=" +
+                _nurseRequest.caKham
+            : "/clinic/danhSachYeuCauLamSang/?idBan=" +
+                ban.IDBan +
+                "&idPhong=" +
+                _nurseRequest.idPhong +
+                "&caKham=" +
+                _nurseRequest.caKham);
+    final response = await http.get(url);
+
+    //Neu thong tin tra ve la dung
+    if (response.statusCode == 200) {
+      print(response.body);
+
+      return confirmRequest =
+          ListConfirmNurse.fromJson(json.decode(response.body));
+
+      ;
+      //});
+    } else
+      throw Exception('Fail');
+  }
+
+  Widget buildRequest(context, ClinicTable ban,banIndex) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Text(
+                ban.soBan != "null"
+                    ? "Danh sách yêu cầu bàn " + ban.soBan
+                    : "Danh sách yêu cầu",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: confirmRequest.list.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        confirmRequest.list[index].STT,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Text(
+                        confirmRequest.list[index].iDPhieuKham,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: IconButton(
+                          color: Colors.green,
+                          icon: Icon(Icons.check_circle),
+                          onPressed: (){acceptSubmit(index,banIndex);},
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: IconButton(
+                          color: Colors.red,
+                          icon: Icon(Icons.cancel),
+                          onPressed: (){declineSubmit(index,banIndex);},
+                        ),
+                      )
+                    ]);
+              }),
+        ],
+      ),
+    );
+  }
+
+  _onClicked(ClinicTable ban,banIndex) {
     showDialog(
         context: this.context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        "Mã phiếu khám",
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(controller: myController),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: RaisedButton(
-                      child: Text("Xác nhận"),
-                      onPressed: inFromSubmit,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
+              content: Form(
+                  key: _formKey,
+                  child: FutureBuilder(
+                      future: fetchRequest(ban),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return buildRequest(context, ban,banIndex);
+                        } else {
+                          return new Center(
+                            child: new CircularProgressIndicator(),
+                          );
+                        }
+                      })));
         });
   }
 
-  inFromSubmit() {
-    ConfirmAttendence();
+  acceptSubmit(index,banIndex) {
+    confirmAttendence(index,banIndex);
     Navigator.of(this.context).pop();
   }
 
-  Future<dynamic> ConfirmAttendence() async {
-    Map<String, dynamic> match = {
-      "isCls": _nurseRequest.isCLS,
-      "idPhieuKham": myController.text,
+  declineSubmit(index,banIndex) {
+    declineAttendence(index,banIndex);
+    Navigator.of(this.context).pop();
+  }
+
+  Future<dynamic> confirmAttendence(index,banIndex) async {
+    Map<String, dynamic> match = _nurseRequest.isCLS?{
+      "stt": confirmRequest.list[index].STT,
+      "idPhieuKham": confirmRequest.list[index].iDPhieuKham,
       "idPhong": _nurseRequest.idPhong,
+      "caKham":_nurseRequest.caKham
+    }:{
+      "stt": confirmRequest.list[index].STT,
+      "idPhieuKham": confirmRequest.list[index].iDPhieuKham,
+      "idPhong": _nurseRequest.idPhong,
+      "idBan":_nurseRequest.danhSachBan[banIndex].IDBan,
+      "caKham":_nurseRequest.caKham
     };
     var headers = {'Content-Type': 'application/json'};
     String jsonString = json.encode(match);
-    Uri uri = Uri.parse(words.Word.ip + '/clinic/checkBenhNhanPhieuKham');
+    Uri uri = Uri.parse(words.Word.ip + (_nurseRequest.isCLS?'/clinic/acceptYeuCauCanLamSang':'/clinic/acceptYeuCauLamSang'));
     Response response = await http.post(uri,
         body: jsonString,
         encoding: Encoding.getByName("utf-8"),
         headers: headers);
     int statusCode = response.statusCode;
     String responseBody = response.body;
-    if (statusCode == 200)
-      {return response;}
-    else {
+    if (statusCode == 200) {
       showDialog(
           context: this.context,
           builder: (BuildContext context) {
             // return object of type Dialog
             return AlertDialog(
-              content:  Text("Không thể xác nhận"),
+              content: Text("Đã xác nhận thành công"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Đóng"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+      return response;
+    } else {
+      showDialog(
+          context: this.context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              content: Text("Không thể xác nhận"),
               actions: <Widget>[
                 // usually buttons at the bottom of the dialog
                 new FlatButton(
@@ -540,13 +625,92 @@ class _NurseState extends State<NurseState> {
     }
   }
 
-  Widget myFloatingButton() {
-    return FloatingActionButton(
-      onPressed: _onClicked,
-      backgroundColor: Colors.red,
-      //if you set mini to true then it will make your floating button small
-      mini: false,
-      child: new Icon(Icons.search),
+  Future<dynamic>  declineAttendence(index,banIndex) async {
+    Map<String, dynamic> match = _nurseRequest.isCLS?{
+      "stt": confirmRequest.list[index].STT,
+      "idPhieuKham": confirmRequest.list[index].iDPhieuKham,
+      "idPhong": _nurseRequest.idPhong,
+      "caKham":_nurseRequest.caKham
+    }:{
+      "stt": confirmRequest.list[index].STT,
+      "idPhieuKham": confirmRequest.list[index].iDPhieuKham,
+      "idPhong": _nurseRequest.idPhong,
+      "idBan":_nurseRequest.danhSachBan[banIndex].IDBan,
+      "caKham":_nurseRequest.caKham
+    };
+    print(index);
+    print(_nurseRequest.danhSachBan);
+    var headers = {'Content-Type': 'application/json'};
+    String jsonString = json.encode(match);
+    Uri uri = Uri.parse(words.Word.ip + (_nurseRequest.isCLS?'/clinic/declineYeuCauCanLamSang':'/clinic/declineYeuCauLamSang'));
+    Response response = await http.post(uri,
+        body: jsonString,
+        encoding: Encoding.getByName("utf-8"),
+        headers: headers);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    if (statusCode == 200) {
+      showDialog(
+          context: this.context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              content: Text("Đã xóa thành công"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Đóng"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+      return response;
+    } else {
+      showDialog(
+          context: this.context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              content: Text("Không thể xóa"),
+              actions: <Widget>[
+                // usually buttons at the bottom of the dialog
+                new FlatButton(
+                  child: new Text("Đóng"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    }
+  }
+
+  Widget myFloatingButton(ClinicTable ban, int banIndex) {
+    return Stack(
+      children: <Widget>[
+        FloatingActionButton(
+          onPressed: () {
+            _onClicked(ban,banIndex);
+          },
+          backgroundColor: Colors.red,
+          child: Icon(Icons.apps),
+        ),
+        Container(
+          width: 20.0,
+          decoration:
+              BoxDecoration(shape: BoxShape.circle, color: Colors.green),
+          child: Center(
+              child: Text(
+            _nurseRequest.danhSachBan[banIndex].SoLuongRequest,
+            style: TextStyle(color: Colors.white),
+          )),
+        ),
+      ],
+      alignment: Alignment.topRight,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/Request/History.dart';
+import 'package:flutter_app/SearchedPatient/SearchedPatient.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/Utils/Words.dart' as words;
 
@@ -39,8 +40,7 @@ class _HistoryState extends State<History> {
   static HistoryRequestList historyRequest;
 
   Future<HistoryRequestList> fetchHistoryRequest() async {
-    final String urlHistory =
-        words.Word.ip + "/history/" + barcode;
+    final String urlHistory = words.Word.ip + "/history/" + barcode;
     final responseHistory = await http.get(urlHistory);
 
     if (responseHistory.statusCode == 200) {
@@ -89,10 +89,20 @@ class _HistoryState extends State<History> {
       body: ListView.builder(
         itemCount: data.list.length,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-              elevation: 2.0,
-              child: _tile(data.list[index].idHistory, data.list[index].hoTen,
-                  data.list[index].tuoi.toString()));
+          return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SearchedPatient(data.list[index].idHistory)));
+              },
+              child: Card(
+                  elevation: 2.0,
+                  child: _tile(
+                      data.list[index].idHistory,
+                      data.list[index].hoTen,
+                      data.list[index].tuoi.toString())));
         },
       ),
     );

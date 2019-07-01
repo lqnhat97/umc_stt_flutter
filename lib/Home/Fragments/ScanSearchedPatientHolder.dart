@@ -2,6 +2,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/Login/Login.dart';
 import 'package:flutter_app/SearchedPatient/SearchedPatient.dart';
 import 'package:flutter_app/Utils/Words.dart' as words;
 import 'package:http/http.dart' as http;
@@ -20,8 +21,13 @@ class ScanSearchedPatientHolderState extends State<StatefulWidget> {
     final response = await http.get(url);
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200) {
+      http.post(words.Word.ip +
+          '/history?idBn=' +
+          Login.result +
+          "&idBnSearch=" +
+          barcodeResult);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SearchedPatient()));
+          context, MaterialPageRoute(builder: (context) => SearchedPatient(barcodeResult)));
     } else
       throw Exception('Fail');
   }

@@ -23,7 +23,12 @@ class Subclinical {
       tenKhu,
       tenLau,
       sttHienTai,
-      sttXetNghiem,tinhTrang;
+      sttXetNghiem,
+      tinhTrang,
+      idPhong,
+      idBan,
+      caKham,
+      maPhieuKham;
   int stt;
 
   Subclinical(
@@ -34,7 +39,12 @@ class Subclinical {
       this.thoiGianDuKien,
       this.tenKhu,
       this.tenLau,
-      this.sttXetNghiem,this.tinhTrang});
+      this.sttXetNghiem,
+      this.tinhTrang,
+      this.idPhong,
+      this.idBan,
+      this.caKham,
+      this.maPhieuKham});
 
   factory Subclinical.fromJson(Map<String, dynamic> json) {
     return Subclinical(
@@ -46,12 +56,26 @@ class Subclinical {
         tenKhu: json['tenKhu'],
         tenLau: json['tenLau'],
         sttXetNghiem: json['sttXetNghiem'],
-    tinhTrang: json['tinhTrang']);
+        tinhTrang: json['tinhTrang'],
+        idPhong: json['idPhong'],
+        idBan: json['idBan'],
+        caKham: json['caKham'].toString(),
+        maPhieuKham: json['maPhieuKham']);
   }
 }
 
 class Clinical {
-  String maPhong, thoiGianDuKien, tenChuyenKhoa, tenKhu, tenLau, maPhieuKham,tinhTrang;
+  String maPhong,
+      thoiGianDuKien,
+      tenChuyenKhoa,
+      tenKhu,
+      tenLau,
+      maPhieuKham,
+      tinhTrang,
+      ban,
+      idPhong,
+      idBan,
+      caKham;
   int stt, sttHienTai;
 
   Clinical(
@@ -62,7 +86,12 @@ class Clinical {
       this.tenChuyenKhoa,
       this.tenKhu,
       this.tenLau,
-      this.maPhieuKham,this.tinhTrang});
+      this.maPhieuKham,
+      this.tinhTrang,
+      this.ban,
+      this.idPhong,
+      this.idBan,
+      this.caKham});
 
   factory Clinical.fromJson(Map<String, dynamic> json) {
     return Clinical(
@@ -74,6 +103,10 @@ class Clinical {
         tenKhu: json['tenKhu'],
         tenLau: json['tenLau'],
         maPhieuKham: json['maPhieuKham'],
-        tinhTrang:json['tinhTrang']);
+        tinhTrang: json['tinhTrang'],
+        ban: json['ban'],
+        idPhong: json['idPhong'],
+        idBan: json['idBan'],
+        caKham: json['caKham'].toString());
   }
 }

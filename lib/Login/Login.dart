@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
       } else {
         AlertDialog alertDialog = new AlertDialog(
             title: new Text("Lỗi"),
-            content: new Text("Không tìm thấy bệnh nhân"),
+            content: new Text("BARCODE SAI !!!"),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(

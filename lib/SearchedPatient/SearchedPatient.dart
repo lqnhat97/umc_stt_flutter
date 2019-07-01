@@ -12,15 +12,22 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_app/Utils/Words.dart' as words;
 
 class SearchedPatient extends StatefulWidget {
+  final String barcode;
+
+  SearchedPatient(this.barcode);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _SearchedPatientState();
+    return _SearchedPatientState(barcode);
   }
 }
 
 class _SearchedPatientState extends State<SearchedPatient> {
   String barcode = ScanSearchedPatientHolder.searchedPatientResult;
+
+  _SearchedPatientState(this.barcode);
+
   static Clinic _clinic;
   static Profile searchedPatientProfile;
   List<Clinical> clinicalData;
@@ -40,14 +47,16 @@ class _SearchedPatientState extends State<SearchedPatient> {
     // defines a timer
     timer = Timer.periodic(Duration(seconds: 15), (Timer t) async {
       dataSub = fetchClinic().asStream().listen((Clinic data) {
-        this.setState(() {
+        if (!mounted) return;
+        setState(() {
           _clinic = data;
         });
       });
     });
 
     timer2 = Timer.periodic(Duration(seconds: 1), (Timer t) {
-      this.setState(() {
+      if (!mounted) return;
+      setState(() {
         now = DateTime.now();
       });
     });
@@ -64,11 +73,6 @@ class _SearchedPatientState extends State<SearchedPatient> {
     //Neu thong tin tra ve la dung
     if (response.statusCode == 200 && response2.statusCode == 200) {
       _clinic = Clinic.fromJson(json.decode(response.body));
-      http.post(words.Word.ip +
-          '/history?idBn=' +
-          Login.result +
-          "&idBnSearch=" +
-          barcode);
 
       searchedPatientProfile = Profile.fromJson(json.decode(response2.body));
       data1 = searchedPatientProfile.lastName +
@@ -89,44 +93,107 @@ class _SearchedPatientState extends State<SearchedPatient> {
   }
 
   Color colorByState(Clinical data1) {
-    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
-      return Colors.grey;
+    if (data1.tinhTrang == 'Đang khám') {
+      return Colors.green;
+    }
+    if (data1.tinhTrang == 'Đã khám') {
+      return Color.fromARGB(255, 43, 182, 115);
     }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
     int tmp2 = data1.sttHienTai - data1.stt;
     if (data1.sttHienTai == data1.stt) {
-      return Colors.green;
+      return Color.fromARGB(255, 43, 182, 115);
     }
     if ((tmp2 >= 0)) {
-      return Colors.red;
+      return Color.fromARGB(255, 191, 0, 0);
     }
     if ((tmp <= userNotiTime * 60)) {
-      return Colors.orange;
+      return Colors.grey;
     } else {
-      return Colors.blueAccent;
+      return Colors.grey;
     }
   }
 
-  Color colorSubByState(Subclinical data1) {
-    if (data1.tinhTrang == 'Đã khám' || data1.tinhTrang == 'Đang khám') {
-      return Colors.grey;
+  Widget IconByState(Clinical data1) {
+    if (data1.tinhTrang == 'Đang khám') {
+      return Container();
+    }
+    if (data1.tinhTrang == 'Đã khám') {
+      return Icon(Icons.check_circle, size: 75.0, color: colorByState(data1));
+    }
+    int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
+            int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
+        (now.hour * 3600 + now.minute * 60 + now.second));
+    int tmp2 = data1.sttHienTai - data1.stt;
+    if (data1.sttHienTai == data1.stt) {
+      return Container();
+    }
+    if ((tmp2 >= 0)) {
+      return Icon(
+        Icons.cancel,
+        size: 75.0,
+        color: colorByState(data1),
+      );
+    }
+    if ((tmp <= userNotiTime * 60)) {
+      return Container();
+    } else {
+      return Container();
+    }
+  }
+
+  Widget IconByStateSub(Subclinical data1) {
+    if (data1.tinhTrang == 'Đang khám') {
+      return Container();
+    }
+    if (data1.tinhTrang == 'Đã khám') {
+      return Icon(Icons.check_circle,
+          size: 50.0, color: colorSubByState(data1));
     }
     int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
             int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
         (now.hour * 3600 + now.minute * 60 + now.second));
     int tmp2 = int.parse(data1.sttHienTai) - data1.stt;
     if (int.parse(data1.sttHienTai) == data1.stt) {
-      return Colors.green;
+      return Container();
     }
-    if ((tmp2 > 0)) {
-      return Colors.red;
+    if ((tmp2 >= 0)) {
+      return Icon(
+        Icons.cancel,
+        size: 50.0,
+        color: colorSubByState(data1),
+      );
     }
     if ((tmp <= userNotiTime * 60)) {
-      return Colors.orange;
+      return Container();
     } else {
-      return Colors.blueAccent;
+      return Container();
+    }
+  }
+
+  Color colorSubByState(Subclinical data1) {
+    if (data1.tinhTrang == 'Đang khám') {
+      return Colors.green;
+    }
+    if (data1.tinhTrang == 'Đã khám') {
+      return Color.fromARGB(255, 43, 182, 115);
+    }
+    int tmp = ((int.parse(data1.thoiGianDuKien.split(':')[0]) * 3600 +
+            int.parse(data1.thoiGianDuKien.split(':')[1]) * 60) -
+        (now.hour * 3600 + now.minute * 60 + now.second));
+    int tmp2 = int.parse(data1.sttHienTai) - data1.stt;
+    if (int.parse(data1.sttHienTai) == data1.stt) {
+      return Color.fromARGB(255, 43, 182, 115);
+    }
+    if ((tmp2 > 0)) {
+      return Color.fromARGB(255, 191, 0, 0);
+    }
+    if ((tmp <= userNotiTime * 60)) {
+      return Colors.grey;
+    } else {
+      return Colors.grey;
     }
   }
 
@@ -221,7 +288,7 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                     ),
                                     Text(
                                       "đang có " + data3 + " cuộc hẹn",
-                                      style: TextStyle(color: Colors.grey[300]),
+                                      style: TextStyle(color: Colors.grey[500]),
                                     )
                                   ],
                                 ))),
@@ -240,167 +307,229 @@ class _SearchedPatientState extends State<SearchedPatient> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               ExpandablePanel(
-                                header: Container(
-                                    decoration: BoxDecoration(
-                                        color: colorByState(
-                                            _clinic.lamSang[index]),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(3.0))),
-                                    child: Card(
-                                        elevation: 5.0,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: <Widget>[
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Text(
-                                                  _clinic.lamSang[index]
-                                                      .tenChuyenKhoa,
-                                                  style: TextStyle(
-                                                      color: Colors.blue[800],
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  _clinic
-                                                      .lamSang[index].maPhong,
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 25,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  "Lầu " +
+                                header: Stack(
+                                  children: <Widget>[
+                                    Container(
+                                        decoration: BoxDecoration(
+                                            color: colorByState(
+                                                _clinic.lamSang[index]),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(3.0))),
+                                        child: Card(
+                                          elevation: 5.0,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Container(
+                                                  decoration: BoxDecoration(
+                                                      color: colorByState(
+                                                          _clinic
+                                                              .lamSang[index])),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          15.0, 0.0, 0.0, 0.0),
+                                                  child: Center(
+                                                    child: Text(
                                                       _clinic.lamSang[index]
-                                                          .tenLau,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  _clinic.lamSang[index].tenKhu,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 20,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "Thời gian dự kiến",
-                                                  style: TextStyle(
-                                                      color: Colors.blue[800],
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  _clinic.lamSang[index]
-                                                      .thoiGianDuKien,
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(countingTime(
-                                                    _clinic.lamSang[index]))
-                                              ],
-                                            ),
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Text(
-                                                  _clinic.lamSang[index]
-                                                      .maPhieuKham,
-                                                  style: TextStyle(
-                                                    color: Colors.blue[700],
-                                                    fontSize: 25,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "Số hiện tại",
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 25,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  _clinic.lamSang[index]
-                                                              .sttHienTai
-                                                              .toString() ==
-                                                          'null'
-                                                      ? '0'
-                                                      : _clinic.lamSang[index]
-                                                          .sttHienTai
-                                                          .toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontSize: 25),
-                                                ),
-                                                IntrinsicHeight(
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .stretch,
+                                                          .tenChuyenKhoa,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 24,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  )),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: <Widget>[
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: <Widget>[
-                                                      Container(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 5.0,
-                                                                horizontal:
-                                                                    25.0),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          border: Border.all(
-                                                              color: colorByState(
-                                                                  _clinic.lamSang[
-                                                                      index]),
-                                                              width: 2.0),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                        ),
-                                                        child: Column(
-                                                          children: <Widget>[
-                                                            Text(
-                                                              "Số của bạn",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 25,
-                                                              ),
+                                                      Text(
+                                                        _clinic.lamSang[index]
+                                                            .maPhong,
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 25,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        "Bàn " +
+                                                            _clinic
+                                                                .lamSang[index]
+                                                                .ban,
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 25,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: <Widget>[
+                                                          Text(
+                                                            "Lầu " +
+                                                                _clinic
+                                                                    .lamSang[
+                                                                        index]
+                                                                    .tenLau,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15,
                                                             ),
-                                                            Text(
-                                                              sttTheoTinhTrangClinical(
-                                                                  _clinic.lamSang[
-                                                                      index]),
-                                                              style: TextStyle(
-                                                                color: colorByState(
-                                                                    _clinic.lamSang[
-                                                                        index]),
-                                                                fontSize: 40,
+                                                          ),
+                                                          SizedBox(width: 10.0),
+                                                          Text(
+                                                            _clinic
+                                                                .lamSang[index]
+                                                                .tenKhu,
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 15,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Text(
+                                                        "Thời gian dự kiến",
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .blue[800],
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        _clinic.lamSang[index]
+                                                            .thoiGianDuKien,
+                                                        style: TextStyle(
+                                                            color: Colors.grey,
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(countingTime(_clinic
+                                                          .lamSang[index]))
+                                                    ],
+                                                  ),
+                                                  Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        _clinic.lamSang[index]
+                                                            .maPhieuKham,
+                                                        style: TextStyle(
+                                                          color:
+                                                              Colors.blue[700],
+                                                          fontSize: 25,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "Số hiện tại",
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 16,
+                                                            fontWeight: FontWeight.bold
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        _clinic.lamSang[index]
+                                                                    .sttHienTai
+                                                                    .toString() ==
+                                                                'null'
+                                                            ? '0'
+                                                            : _clinic
+                                                                .lamSang[index]
+                                                                .sttHienTai
+                                                                .toString(),
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .blueAccent,
+                                                            fontSize: 25),
+                                                      ),
+                                                      Text(
+                                                        "Số của bạn",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      IntrinsicHeight(
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .stretch,
+                                                          children: <Widget>[
+                                                            Container(
+                                                              padding: EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          5.0,
+                                                                      horizontal:
+                                                                          25.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                border: Border.all(
+                                                                    color: colorByState(
+                                                                        _clinic.lamSang[
+                                                                            index]),
+                                                                    width: 2.0),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10.0),
+                                                              ),
+                                                              child: Column(
+                                                                children: <
+                                                                    Widget>[
+                                                                  Text(
+                                                                    sttTheoTinhTrangClinical(
+                                                                        _clinic.lamSang[
+                                                                            index]),
+                                                                    style: TextStyle(
+                                                                        color: colorByState(_clinic.lamSang[
+                                                                            index]),
+                                                                        fontSize:
+                                                                            30,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  )
+                                                                ],
                                                               ),
                                                             )
                                                           ],
                                                         ),
-                                                      )
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 5,
+                                                      ),
                                                     ],
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 5,
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ))),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                    IconByState(_clinic.lamSang[index])
+                                  ],
+                                  alignment: Alignment.bottomRight,
+                                ),
                                 // Cận lâm sàng
                                 expanded:
                                     /*SizedBox(
@@ -417,264 +546,227 @@ class _SearchedPatientState extends State<SearchedPatient> {
                                             (BuildContext context, int index) {
                                           return new GestureDetector(
                                             child: new ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      color: colorSubByState(
-                                                          _clinic.canLamSang[
-                                                              index]),
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  3.0))),
-                                                  child: Card(
-                                                    elevation: 2.0,
-                                                    child: new Container(
-                                                        padding: new EdgeInsets
-                                                                .symmetric(
-                                                            vertical: 1.0,
-                                                            horizontal: 5.0),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: <Widget>[
-                                                            Text(
-                                                              _clinic
-                                                                  .canLamSang[
-                                                                      index]
-                                                                  .tenPhong,
-                                                              maxLines: 2,
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .blueAccent,
-                                                                  fontSize: 18),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                            Container(
+                                                borderRadius:
+                                                    BorderRadius.circular(2.0),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Container(
+                                                        decoration: BoxDecoration(
+                                                            color: colorSubByState(
+                                                                _clinic.canLamSang[
+                                                                    index]),
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        3.0))),
+                                                        child: Card(
+                                                          elevation: 2.0,
+                                                          child: new Container(
                                                               padding: new EdgeInsets
                                                                       .symmetric(
-                                                                  vertical: 5,
+                                                                  vertical: 1.0,
                                                                   horizontal:
-                                                                      0.0),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                      5.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
                                                                 children: <
                                                                     Widget>[
-                                                                  Text(
-                                                                    "Phòng",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                  ),
                                                                   Text(
                                                                     _clinic
                                                                         .canLamSang[
                                                                             index]
-                                                                        .maPhongCls,
+                                                                        .tenPhong,
+                                                                    maxLines: 2,
                                                                     style: TextStyle(
-                                                                        color: Colors
-                                                                            .black45,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .right,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              padding: new EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5,
-                                                                  horizontal:
-                                                                      0.0),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(
-                                                                    "Lầu " +
-                                                                        _clinic
-                                                                            .canLamSang[index]
-                                                                            .tenLau,
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                  ),
-                                                                  Text(
-                                                                    _clinic
-                                                                        .canLamSang[
-                                                                            index]
-                                                                        .tenKhu,
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black45,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .right,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              padding: new EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5,
-                                                                  horizontal:
-                                                                      0.0),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(
-                                                                    "Thời gian",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                  ),
-                                                                  Text(
-                                                                    _clinic
-                                                                        .canLamSang[
-                                                                            index]
-                                                                        .thoiGianDuKien,
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black45,
-                                                                        fontSize:
-                                                                            15),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .right,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              padding: new EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5,
-                                                                  horizontal:
-                                                                      0.0),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(
-                                                                    "Số hiện tại",
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            15,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                  ),
-                                                                  Text(
-                                                                    _clinic.canLamSang[index].sttXetNghiem ==
-                                                                            'null'
-                                                                        ? _clinic
-                                                                            .canLamSang[
-                                                                                index]
-                                                                            .sttHienTai
-                                                                        : _clinic
-                                                                            .canLamSang[index]
-                                                                            .sttXetNghiem,
-                                                                    style: TextStyle(
+                                                                            FontWeight
+                                                                                .bold,
                                                                         color: Colors
-                                                                            .lightBlue,
+                                                                            .blueAccent,
                                                                         fontSize:
-                                                                            15,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
+                                                                            18),
                                                                     textAlign:
                                                                         TextAlign
-                                                                            .right,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                                padding: new EdgeInsets
-                                                                        .symmetric(
-                                                                    vertical: 5,
-                                                                    horizontal:
-                                                                        0.0),
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: <
-                                                                      Widget>[
-                                                                    Text(
-                                                                      "Số của bạn",
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .black,
-                                                                          fontSize:
-                                                                              15,
-                                                                          fontWeight:
-                                                                              FontWeight.bold),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
-                                                                    ),
-                                                                    Text(
-                                                                      sttTheoTinhTrangSubclinical(
+                                                                            .center,
+                                                                  ),
+                                                                  Container(
+                                                                    padding: new EdgeInsets
+                                                                            .symmetric(
+                                                                        vertical:
+                                                                            5,
+                                                                        horizontal:
+                                                                            0.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+
+                                                                        Text(
                                                                           _clinic
-                                                                              .canLamSang[index]),
-                                                                      style: TextStyle(
-                                                                          color: colorSubByState(_clinic.canLamSang[
-                                                                              index]),
-                                                                          fontSize:
-                                                                              15,
-                                                                          fontWeight:
-                                                                              FontWeight.bold),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .right,
-                                                                    )
-                                                                  ],
-                                                                )),
-                                                          ],
+                                                                              .canLamSang[index]
+                                                                              .maPhongCls,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 15,
+                                                                          fontWeight: FontWeight.bold),
+                                                                          textAlign:
+                                                                              TextAlign.right,
+
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    padding: new EdgeInsets
+                                                                            .symmetric(
+                                                                        vertical:
+                                                                            5,
+                                                                        horizontal:
+                                                                            0.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Text(
+                                                                          "Lầu " +
+                                                                              _clinic.canLamSang[index].tenLau,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 15),
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                        ),
+                                                                        Text(
+                                                                          _clinic
+                                                                              .canLamSang[index]
+                                                                              .tenKhu,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black45,
+                                                                              fontSize: 15),
+                                                                          textAlign:
+                                                                              TextAlign.right,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    padding: new EdgeInsets
+                                                                            .symmetric(
+                                                                        vertical:
+                                                                            5,
+                                                                        horizontal:
+                                                                            0.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Text(
+                                                                          "Thời gian",
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 15),
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                        ),
+                                                                        Text(
+                                                                          _clinic
+                                                                              .canLamSang[index]
+                                                                              .thoiGianDuKien,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black45,
+                                                                              fontSize: 15),
+                                                                          textAlign:
+                                                                              TextAlign.right,
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    padding: new EdgeInsets
+                                                                            .symmetric(
+                                                                        vertical:
+                                                                            5,
+                                                                        horizontal:
+                                                                            0.0),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Text(
+                                                                          "Số hiện tại",
+                                                                          style: TextStyle(
+                                                                              color: Colors.black,
+                                                                              fontSize: 15,
+                                                                              fontWeight: FontWeight.bold),
+                                                                          textAlign:
+                                                                              TextAlign.left,
+                                                                        ),
+                                                                        Text(
+                                                                          _clinic.canLamSang[index].sttXetNghiem == 'null'
+                                                                              ? _clinic.canLamSang[index].sttHienTai
+                                                                              : _clinic.canLamSang[index].sttXetNghiem,
+                                                                          style: TextStyle(
+                                                                              color: Colors.lightBlue,
+                                                                              fontSize: 15,
+                                                                              fontWeight: FontWeight.bold),
+                                                                          textAlign:
+                                                                              TextAlign.right,
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                      padding: new EdgeInsets
+                                                                              .symmetric(
+                                                                          vertical:
+                                                                              5,
+                                                                          horizontal:
+                                                                              0.0),
+                                                                      child:
+                                                                          Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.spaceBetween,
+                                                                        children: <
+                                                                            Widget>[
+                                                                          Text(
+                                                                            "Số của bạn",
+                                                                            style: TextStyle(
+                                                                                color: Colors.black,
+                                                                                fontSize: 15,
+                                                                                fontWeight: FontWeight.bold),
+                                                                            textAlign:
+                                                                                TextAlign.left,
+                                                                          ),
+                                                                          Text(
+                                                                            sttTheoTinhTrangSubclinical(_clinic.canLamSang[index]),
+                                                                            style: TextStyle(
+                                                                                color: colorSubByState(_clinic.canLamSang[index]),
+                                                                                fontSize: 15,
+                                                                                fontWeight: FontWeight.bold),
+                                                                            textAlign:
+                                                                                TextAlign.right,
+                                                                          )
+                                                                        ],
+                                                                      )),
+                                                                ],
+                                                              )),
                                                         )),
-                                                  )),
-                                            ),
+                                                    IconByStateSub(_clinic
+                                                        .canLamSang[index])
+                                                  ],
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                )),
                                             onTap: () {
                                               showDialog(
                                                 barrierDismissible: false,
@@ -722,13 +814,9 @@ class _SearchedPatientState extends State<SearchedPatient> {
   @override
   void dispose() {
     // TODO: implement dispose
-    if (timer.isActive) {
-      timer.cancel();
-    }
-    dataSub.cancel();
-    if (timer2.isActive) {
-      timer2.cancel();
-    }
+    timer?.cancel();
+    dataSub?.cancel();
+    timer2?.cancel();
     super.dispose();
   }
 }

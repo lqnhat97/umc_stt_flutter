@@ -13,32 +13,47 @@ class SettingFragment extends StatefulWidget {
 }
 
 class _SettingFragmentState extends State<SettingFragment> {
-  List _time = ["5 phút", "10 phút", "15 phút"];
+  List _time = ["15 phút", "20 phút", "30 phút"];
   List _repeat = ["Không lặp", "2 lần", "5 lần"];
   List<DropdownMenuItem<String>> _timeDropdownItems, _repeatDropdownItems;
   String _currentTime, _currentRepeat;
 
-  FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
 
   FlutterLocalNotificationsPlugin get notifications => _notifications;
-
-  final mSharedPreferencesTest prefs = new mSharedPreferencesTest();
 
   //init Nofitication
 //  Future init() async{
 //    notifications.initialize(InitializationSettings(AndroidInitializationSettings('@mipmap/ic_launcher'), IOSInitializationSettings()));
 //  }
 
+  _setTime(data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('time', int.parse(data));
+  }
 
+  _setAllowsNotifications(bool data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('allowNotifications', data);
+  }
+
+ _getTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    int tmp =  prefs.getInt('time') ?? 15;
+    if(!mounted) return;
+    setState(() {
+      _currentTime = tmp.toString()+" phút";
+    });
+    _setTime(_currentTime.split(' ')[0]);
+  }
 
   @override
-  void initState() {
+  void initState()   {
     _timeDropdownItems = getDropDownItems(_time);
     _repeatDropdownItems = getDropDownItems(_repeat);
-    _currentTime = _timeDropdownItems[0].value;
-    _currentRepeat = _repeatDropdownItems[0].value;
-    prefs.setTime(int.parse(_currentTime.split(' ')[0]));
-    prefs.setAllowsNotifications(true);
+     _getTime();
+    _setAllowsNotifications(true);
     // TODO: implement initState
     super.initState();
     _notifications = new FlutterLocalNotificationsPlugin();
@@ -57,6 +72,7 @@ class _SettingFragmentState extends State<SettingFragment> {
 
   @override
   Widget build(BuildContext context) {
+    _getTime();
     // TODO: implement build
     return Scaffold(
         appBar: PreferredSize(
@@ -98,43 +114,24 @@ class _SettingFragmentState extends State<SettingFragment> {
                   ),
                 ),
               ),
-              Card(
-                elevation: 5.0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15.0),
-                  clipBehavior: Clip.antiAlias,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "Lặp lại",
-                          style: TextStyle(color: Colors.blue, fontSize: 20.0),
-                        ),
-                        DropdownButton(
-                          value: _currentRepeat,
-                          items: _repeatDropdownItems,
-                          onChanged: changeDropdownItemsRepeat,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+
+              Card(child:Container(
+                height: MediaQuery.of(context).size.height *
+                    0.6,
+                decoration: new BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('images/huong_dan.png'), fit: BoxFit.fill)),
+              ),)
             ],
           ),
         ));
   }
 
-
   void changeDropdownItems(String value) {
+    _setTime(value.split(" ")[0]);
     setState(() {
       _currentTime = value;
-
     });
-//      _showNotificationWithoutSound();
-
   }
 
   void changeDropdownItemsRepeat(String value) {
@@ -142,33 +139,5 @@ class _SettingFragmentState extends State<SettingFragment> {
       _currentRepeat = value;
     });
   }
-
-  Future onSelecNofitication(String payload) async {
-    showDialog(context: context,
-      builder: (_)=>AlertDialog(
-        title: const Text("Nhắc nhở"),
-        content: Text("Hãy đến phòng khám: $payload"),
-      )
-    );
-  }
- /* Future _showNotificationWithoutSound() async {
-    var scheduledNotificationDateTime = DateTime.now().add(Duration(minutes: 1));
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'umc_notification', 'UMC Notification', '',
-        importance: Importance.Max, priority: Priority.High);
-    var iOSPlatformChannelSpecifics =
-    new IOSNotificationDetails(presentSound: false);
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-    await _notifications.schedule(
-      0,
-      'Thông báo',
-      'Đã đến giờ giám, nhấp vào để xem chi tiết!',
-      scheduledNotificationDateTime,
-      platformChannelSpecifics,
-      payload: 'tên phòng',
-    );
-  }*/
 
 }

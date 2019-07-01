@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/History/HistoryFragment.dart';
+import 'package:flutter_app/Home/Fragments/History/HistoryFragment.dart';
 import 'package:flutter_app/Home/Fragments/HomeFragment.dart';
 import 'package:flutter_app/Home/Fragments/ProfileFragment.dart';
 import 'package:flutter_app/Home/Fragments/ScanSearchedPatientHolder.dart';
